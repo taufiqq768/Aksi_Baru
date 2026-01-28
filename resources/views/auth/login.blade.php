@@ -1,46 +1,100 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>Login - Aplikasi AKSI</title>
+    <meta name="description" content="Login to Aplikasi AKSI - Audit dan Kontrol Sistem Informasi">
+    <link rel="stylesheet" href="{{ asset('css/auth.css') }}">
 </head>
-<body class="d-flex align-items-center" style="height:100vh;">
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">Login</div>
-                <div class="card-body">
-                    @if($errors->any())
-                        <div class="alert alert-danger">{{ $errors->first() }}</div>
-                    @endif
 
-                    <form method="POST" action="{{ route('login.attempt') }}">
-                        @csrf
+<body>
+    <div class="auth-container">
+        <!-- Animated Background Shapes -->
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
 
-                        <div class="mb-3">
-                            <label for="user_email" class="form-label">Email</label>
-                            <input id="user_email" type="email" class="form-control" name="user_email" value="{{ old('user_email') }}" required autofocus>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="user_password" class="form-label">Password</label>
-                            <input id="user_password" type="password" class="form-control" name="user_password" required>
-                        </div>
-
-                        <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
-                            <label class="form-check-label" for="remember">Remember me</label>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </form>
+        <!-- Main Auth Card -->
+        <div class="auth-card">
+            <!-- Left Side - Logo & Description -->
+            <div class="auth-left">
+                <div class="logo-section">
+                    <div class="logo">AKSI</div>
+                    <p class="logo-description">
+                        Sistem Audit dan Kontrol yang terintegrasi untuk meningkatkan efisiensi dan transparansi dalam
+                        pengelolaan temuan audit, rekomendasi, dan tindak lanjut.
+                    </p>
                 </div>
+            </div>
+
+            <!-- Right Side - Form -->
+            <div class="auth-right">
+                <!-- Page Title -->
+                <h2 style="font-size: 28px; font-weight: 700; color: #088395; margin-bottom: 10px;">Welcome Back</h2>
+                <p style="font-size: 14px; color: #666; margin-bottom: 30px;">Please login to access your account</p>
+
+                <!-- Alert Messages -->
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        {{ $errors->first() }}
+                    </div>
+                @endif
+
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <!-- Login Form -->
+                <form method="POST" action="{{ route('login.attempt') }}" id="login-form">
+                    @csrf
+
+                    <div class="form-group">
+                        <label for="user_nik">NIK (Nomor Induk Karyawan)</label>
+                        <input type="text" id="user_nik" name="user_nik" placeholder="Enter your NIK"
+                            value="{{ old('user_nik') }}" required autofocus>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user_password">Password</label>
+                        <input type="password" id="user_password" name="user_password"
+                            placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Login</button>
+                </form>
             </div>
         </div>
     </div>
-</div>
+
+    <script>
+        // Form Submit Loading State
+        const form = document.getElementById('login-form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const submitBtn = this.querySelector('.submit-btn');
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+            });
+        }
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.transition = 'opacity 0.3s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 300);
+            });
+        }, 5000);
+    </script>
 </body>
+
 </html>

@@ -305,7 +305,8 @@
         <div class="col-md-3">
             <div class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                 <div class="stats-number">
-                    {{ $pemeriksaan->filter(function ($item) {return \Carbon\Carbon::parse($item->created_at)->month == now()->month;})->count() }}
+                    {{ $pemeriksaan->filter(function ($item) {
+        return \Carbon\Carbon::parse($item->created_at)->month == now()->month; })->count() }}
                 </div>
                 <div class="stats-label">Bulan Ini</div>
             </div>
@@ -411,8 +412,7 @@
                                         </button>
                                         @if ($item->pemeriksaan_dokumen_surat_tugas)
                                             <a href="{{ asset('storage/documents/' . $item->pemeriksaan_dokumen_surat_tugas) }}"
-                                                class="btn btn-sm btn-outline-success" target="_blank"
-                                                title="Lihat Dokumen">
+                                                class="btn btn-sm btn-outline-success" target="_blank" title="Lihat Dokumen">
                                                 <i class="fas fa-file-pdf"></i>
                                             </a>
                                         @endif
@@ -580,8 +580,8 @@
 
                         <div class="mb-3">
                             <label class="form-label">Judul <span class="text-danger">*</span></label>
-                            <textarea class="form-control" name="pemeriksaan_judul" rows="3" placeholder="Masukkan judul pemeriksaan..."
-                                required></textarea>
+                            <textarea class="form-control" name="pemeriksaan_judul" rows="3"
+                                placeholder="Masukkan judul pemeriksaan..." required></textarea>
                         </div>
 
                         <div class="card mb-3">
@@ -606,7 +606,8 @@
                                         @foreach ($units as $unit)
                                             <option value="{{ $unit->unit_nama }}" data-jenis="{{ $unit->jenis }}"
                                                 data-unit-id="{{ $unit->unit_id }}">
-                                                {{ $unit->unit_nama }}</option>
+                                                {{ $unit->unit_nama }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     <input type="hidden" name="unit_id" id="unit_id_hidden">
@@ -689,9 +690,8 @@
                                                 <li>
                                                     <div class="form-check dropdown-item-text py-2"
                                                         style="padding-left: 2rem; padding-right: 1rem;">
-                                                        <input class="form-check-input anggota-checkbox me-3"
-                                                            type="checkbox" name="pemeriksaan_petugas[]"
-                                                            value="{{ $anggota->user_nik }}"
+                                                        <input class="form-check-input anggota-checkbox me-3" type="checkbox"
+                                                            name="pemeriksaan_petugas[]" value="{{ $anggota->user_nik }}"
                                                             id="anggota_{{ $anggota->user_nik }}"
                                                             style="transform: scale(1.2);">
                                                         <label class="form-check-label ms-1"
@@ -758,8 +758,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">Judul <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="pemeriksaan_judul" id="edit_judul"
-                                required>
+                            <input type="text" class="form-control" name="pemeriksaan_judul" id="edit_judul" required>
                         </div>
 
                         <div class="card mb-3">
@@ -779,13 +778,13 @@
                                 </div>
 
                                 <div class="mb-0">
-                                    <label class="form-label">Ojek Audit (Auditee)<span
-                                            class="text-danger">*</span></label>
+                                    <label class="form-label">Ojek Audit (Auditee)<span class="text-danger">*</span></label>
                                     <select class="form-select" name="edit_auditee" id="edit_auditee" required>
                                         <option value="">Pilih Unit</option>
                                         @foreach ($units as $unit)
                                             <option value="{{ $unit->unit_id }}">
-                                                {{ $unit->unit_nama }}</option>
+                                                {{ $unit->unit_nama }}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -800,15 +799,15 @@
                                 <div class="mb-3">
                                     <label class="form-label">Nomor Dokumen Surat Tugas <span
                                             class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="pemeriksaan_nomor_st"
-                                        id="edit_nomor_st" required>
+                                    <input type="text" class="form-control" name="pemeriksaan_nomor_st" id="edit_nomor_st"
+                                        required>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label">Tanggal Dokumen Surat Tugas <span
                                             class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" name="pemeriksaan_tanggal_st"
-                                        id="edit_tgl_st" required>
+                                    <input type="date" class="form-control" name="pemeriksaan_tanggal_st" id="edit_tgl_st"
+                                        required>
                                 </div>
 
                                 <div class="mb-0">
@@ -1022,7 +1021,7 @@
 
 @push('scripts')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Initialize DataTable
             $('#pemeriksaanTable').DataTable({
                 responsive: true,
@@ -1038,18 +1037,18 @@
                     [6, "desc"]
                 ], // Sort by date column (index 6) descending
                 "columnDefs": [{
-                        "orderable": false,
-                        "targets": [8]
-                    }, // Disable sorting for Action column
-                    {
-                        "className": "text-center",
-                        "targets": [0, 7, 8]
-                    } // Center align specific columns
+                    "orderable": false,
+                    "targets": [8]
+                }, // Disable sorting for Action column
+                {
+                    "className": "text-center",
+                    "targets": [0, 7, 8]
+                } // Center align specific columns
                 ],
                 "dom": '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
                     '<"row"<"col-sm-12"tr>>' +
                     '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
-                "drawCallback": function(settings) {
+                "drawCallback": function (settings) {
                     // Re-initialize tooltips after table redraw
                     $('[data-bs-toggle="tooltip"]').tooltip();
                 }
@@ -1359,9 +1358,9 @@
                         const petugasIds = data.pemeriksaan_petugas.split('/');
                         const petugasPromises = petugasIds.map(id =>
                             fetch(`/api/user/${id.trim()}`)
-                            .then(response => response.json())
-                            .then(user => user.user_nama)
-                            .catch(() => id.trim())
+                                .then(response => response.json())
+                                .then(user => user.user_nama)
+                                .catch(() => id.trim())
                         );
 
                         Promise.all(petugasPromises)
@@ -1539,13 +1538,13 @@
         }
 
         // Add event listeners for anggota checkboxes
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Add event listener for unit selection in add form
             const objekAuditSelect = document.getElementById('objek_audit_select');
             const unitIdHidden = document.getElementById('unit_id_hidden');
 
             if (objekAuditSelect && unitIdHidden) {
-                objekAuditSelect.addEventListener('change', function() {
+                objekAuditSelect.addEventListener('change', function () {
                     const selectedOption = this.options[this.selectedIndex];
                     const unitId = selectedOption.getAttribute('data-unit-id');
                     unitIdHidden.value = unitId || '';
@@ -1566,7 +1565,7 @@
 
             // Prevent dropdown from closing when clicking on checkbox items
             document.querySelectorAll('.dropdown-item-text').forEach(item => {
-                item.addEventListener('click', function(e) {
+                item.addEventListener('click', function (e) {
                     e.stopPropagation();
                 });
             });

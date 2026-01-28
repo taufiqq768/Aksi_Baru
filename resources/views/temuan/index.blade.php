@@ -16,533 +16,185 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;500;600;700&display=swap"
         rel="stylesheet">
-    <style>
-        /* Font Family Settings */
-        body,
-        .modal-body,
-        .table,
-        .form-control,
-        .form-select,
-        .btn,
-        .card-body,
-        .dropdown-menu {
-            font-family: 'Roboto', sans-serif;
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        .card-title,
-        .modal-title,
-        .page-title,
-        .stats-label,
-        th {
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: #374151;
-            font-family: 'Montserrat', sans-serif;
-        }
-
-        .required::after {
-            content: " *";
-            color: #ef4444;
-        }
-
-        .card {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: none;
-        }
-
-        .btn-primary {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn-primary:hover {
-            background-color: #2563eb;
-            border-color: #2563eb;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .btn-secondary {
-            background-color: #6b7280;
-            border-color: #6b7280;
-            font-weight: 500;
-            border-radius: 8px;
-        }
-
-        .btn-success {
-            background-color: #10b981;
-            border-color: #10b981;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .btn-success:hover {
-            background-color: #059669;
-            border-color: #059669;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        .table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-            font-size: 0.75rem;
-            padding: 0.75rem 0.5rem;
-            border-bottom: 2px solid #dee2e6;
-        }
-
-        .table td {
-            font-size: 0.8rem;
-            padding: 0.75rem 0.5rem;
-            vertical-align: middle;
-        }
-
-        .action-buttons {
-            white-space: nowrap;
-        }
-
-        .btn-sm {
-            font-size: 0.75rem;
-            padding: 0.375rem 0.75rem;
-            border-radius: 6px;
-            font-weight: 500;
-        }
-
-        .badge {
-            font-size: 0.7rem;
-            font-weight: 500;
-            padding: 0.35em 0.65em;
-        }
-
-        /* Stats Card Styling */
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 16px;
-            padding: 1.5rem;
-            color: white;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 1rem;
-        }
-
-        .stats-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.1);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .stats-card:hover::before {
-            opacity: 1;
-        }
-
-        .stats-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            line-height: 1;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .stats-label {
-            font-size: 0.875rem;
-            font-weight: 500;
-            opacity: 0.9;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Data Table Font Size */
-        #temuanTable {
-            font-size: 0.8rem;
-        }
-
-        #temuanTable th {
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.75rem 0.5rem;
-        }
-
-        #temuanTable td {
-            font-size: 0.8rem;
-            padding: 0.75rem 0.5rem;
-            vertical-align: middle;
-        }
-
-        /* Modal Font Size */
-        .modal-body {
-            font-size: 0.85rem;
-        }
-
-        .modal-body .form-label {
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .modal-body .form-control,
-        .modal-body .form-select {
-            font-size: 0.8rem;
-            padding: 0.5rem 0.75rem;
-        }
-
-        .modal-body .card-title {
-            font-size: 0.85rem;
-        }
-
-        .modal-body .form-text {
-            font-size: 0.7rem;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .stats-card {
-                padding: 1rem;
-                margin-bottom: 0.75rem;
-            }
-
-            .stats-number {
-                font-size: 2rem;
-            }
-
-            .stats-label {
-                font-size: 0.75rem;
-            }
-
-            #temuanTable {
-                font-size: 0.75rem;
-            }
-
-            #temuanTable th {
-                font-size: 0.7rem;
-                padding: 0.5rem 0.4rem;
-            }
-
-            #temuanTable td {
-                font-size: 0.75rem;
-                padding: 0.5rem 0.4rem;
-            }
-
-            .btn-sm {
-                font-size: 0.7rem;
-                padding: 0.25rem 0.5rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .stats-card {
-                padding: 0.75rem;
-            }
-
-            .stats-number {
-                font-size: 1.75rem;
-            }
-
-            #temuanTable {
-                font-size: 0.7rem;
-            }
-
-            #temuanTable th {
-                font-size: 0.65rem;
-                padding: 0.4rem 0.3rem;
-            }
-
-            #temuanTable td {
-                font-size: 0.7rem;
-                padding: 0.4rem 0.3rem;
-            }
-
-            .btn-sm {
-                font-size: 0.65rem;
-                padding: 0.2rem 0.4rem;
-            }
-        }
-    </style>
-@endpush
-
 @push('styles')
-    <style>
-        /* Font Family */
-        body,
-        .card,
-        .table,
-        .btn,
-        .form-control,
-        .modal,
-        .badge {
-            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-        }
+<style>
+/* ===============================
+   FONT FAMILY
+================================ */
+body,
+.modal-body,
+.table,
+.form-control,
+.form-select,
+.btn,
+.card-body,
+.dropdown-menu,
+.card,
+.badge {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 
-        .card-title,
-        .modal-title,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            font-family: 'Montserrat', 'Roboto', sans-serif !important;
-            font-weight: 600;
-        }
+h1, h2, h3, h4, h5, h6,
+.card-title,
+.modal-title,
+.page-title,
+.stats-label,
+th {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
 
-        /* Stats Cards */
-        .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 12px;
-            padding: 1.5rem;
-            color: white;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            margin-bottom: 1rem;
-        }
+.form-label {
+    font-weight: 500;
+    color: #374151;
+}
 
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
+/* ===============================
+   CARD
+================================ */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.08);
+    transition: all .3s ease;
+}
 
-        .stats-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            font-family: 'Montserrat', sans-serif;
-        }
+.card:hover {
+    box-shadow: 0 8px 30px rgba(0,0,0,.12);
+}
 
-        .stats-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+.card-header {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 1.25rem;
+}
 
-        /* Button Styling */
-        .btn {
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            font-size: 0.875rem;
-            padding: 0.375rem 0.75rem;
-        }
+/* ===============================
+   BUTTON
+================================ */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all .3s ease;
+    font-size: .875rem;
+}
 
-        .btn-sm {
-            font-size: 0.8rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-        }
+.btn-sm {
+    font-size: .75rem;
+    padding: .25rem .5rem;
+}
 
-        .btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.15);
+}
 
-        .btn-group .btn {
-            margin-right: 2px;
-        }
+.btn-primary {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
 
-        .btn-group .btn:last-child {
-            margin-right: 0;
-        }
+.btn-primary:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
 
-        /* Table Styling */
-        .table {
-            font-size: 0.9rem;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-        }
+.btn-success {
+    background-color: #10b981;
+    border-color: #10b981;
+}
 
-        .table thead th {
-            background: #495057;
-            color: white;
-            font-weight: 600;
-            border: none;
-            padding: 1rem 0.75rem;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+.btn-success:hover {
+    background-color: #059669;
+    border-color: #059669;
+}
 
-        .table tbody tr {
-            transition: all 0.3s ease;
-        }
+/* ===============================
+   TABLE
+================================ */
+.table {
+    font-size: .85rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
 
-        .table tbody tr:hover {
-            background-color: #f8f9ff;
-            transform: scale(1.01);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+.table thead th {
+    background: #495057;
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
 
-        .table tbody td {
-            padding: 0.875rem 0.75rem;
-            vertical-align: middle;
-            border-color: #e9ecef;
-        }
+.table tbody tr:hover {
+    background-color: #f8f9ff;
+}
 
-        /* Badge Styling */
-        .badge {
-            font-size: 0.75rem;
-            padding: 0.35rem 0.65rem;
-            border-radius: 20px;
-            font-weight: 500;
-        }
+/* ===============================
+   BADGE
+================================ */
+.badge {
+    font-size: .7rem;
+    font-weight: 500;
+    padding: .35em .65em;
+    border-radius: 20px;
+}
 
-        /* Card Styling */
-        .card {
-            border: none;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-        }
+/* ===============================
+   STATS CARD
+================================ */
+.stats-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    color: #fff;
+    box-shadow: 0 10px 25px rgba(0,0,0,.1);
+    transition: all .3s ease;
+}
 
-        .card:hover {
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-        }
+.stats-card:hover {
+    transform: translateY(-5px);
+}
 
-        .card-header {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-bottom: 1px solid #e9ecef;
-            border-radius: 12px 12px 0 0 !important;
-            padding: 1.25rem;
-        }
+.stats-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .table {
-                font-size: 0.8rem;
-            }
+.stats-label {
+    font-size: .875rem;
+    text-transform: uppercase;
+}
 
-            .btn-sm {
-                font-size: 0.75rem;
-                padding: 0.2rem 0.4rem;
-            }
+/* ===============================
+   MODAL
+================================ */
+.modal-content {
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,.15);
+}
 
-            .card-header {
-                padding: 1rem;
-            }
+.modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+}
 
-            .stats-number {
-                font-size: 2rem;
-            }
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+    .stats-number { font-size: 2rem; }
+    .table { font-size: .75rem; }
+}
 
-            .stats-card {
-                padding: 1rem;
-            }
-        }
-
-        /* DataTable specific styling */
-        #temuanTable {
-            font-size: 0.875rem;
-        }
-
-        #temuanTable thead th {
-            font-size: 0.8rem;
-        }
-
-        #temuanTable tbody td {
-            font-size: 0.85rem;
-        }
-
-        /* Modal styling */
-        .modal-content {
-            font-size: 0.9rem;
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .modal-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px 12px 0 0;
-            border-bottom: none;
-        }
-
-        .modal-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: #495057;
-            font-size: 0.875rem;
-        }
-
-        .form-control,
-        .form-select {
-            border-radius: 6px;
-            border: 1px solid #ced4da;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        }
-
-        /* DataTable pagination styling */
-        .dataTables_wrapper .dataTables_paginate .paginate_button {
-            padding: 0.375rem 0.75rem;
-            margin: 0 2px;
-            border-radius: 6px;
-            border: 1px solid #dee2e6;
-            background: white;
-            color: #495057;
-            transition: all 0.3s ease;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-
-        .dataTables_wrapper .dataTables_info {
-            font-size: 0.875rem;
-            color: #6c757d;
-        }
-
-        .dataTables_wrapper .dataTables_length select {
-            border-radius: 6px;
-            border: 1px solid #ced4da;
-            padding: 0.25rem 0.5rem;
-        }
-    </style>
+@media (max-width: 576px) {
+    .stats-number { font-size: 1.75rem; }
+}
+</style>
 @endpush
+
 
 @section('content')
     <!-- Stats Cards Row -->

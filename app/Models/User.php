@@ -97,6 +97,7 @@ class User extends Authenticatable
 
     /**
      * Automatically hash the user_password when setting it.
+     * Preserves existing MD5/plain text passwords for backward compatibility.
      *
      * @param  string  $value
      * @return void
@@ -108,12 +109,27 @@ class User extends Authenticatable
             return;
         }
 
-        // If the value is already a bcrypt hash (starts with $2y$), don't rehash
+        // If the value is already a bcrypt hash (starts with $2y$ or $2a$), don't rehash
         if (str_starts_with($value, '$2y$') || str_starts_with($value, '$2a$')) {
             $this->attributes['user_password'] = $value;
             return;
         }
 
+        // If it looks like MD5 (32 character hex string), keep as is
+        if (preg_match('/^[a-f0-9]{32}$/i', $value)) {
+            $this->attributes['user_password'] = $value;
+            return;
+        }
+
+        // For new passwords or updates from forms, hash them
+        // Only hash if this is being set from a form/API (not from database)
+        // We check if the model exists (has been loaded from DB) and if password hasn't changed
+        if ($this->exists && isset($this->attributes['user_password']) && $this->attributes['user_password'] === $value) {
+            // Password hasn't changed, keep as is (supports plain text/MD5 from DB)
+            return;
+        }
+
+        // New password or password being updated - hash it with bcrypt
         $this->attributes['user_password'] = Hash::make($value);
     }
 
@@ -125,6 +141,17 @@ class User extends Authenticatable
     public function getAuthPassword()
     {
         return $this->user_password;
+    }
+
+    /**
+     * Get the name of the unique identifier for the user.
+     * This tells Laravel to use 'user_nik' instead of 'email' for authentication.
+     *
+     * @return string
+     */
+    public function getAuthIdentifierName()
+    {
+        return 'user_nik';
     }
 
 }

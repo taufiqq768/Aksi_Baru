@@ -2,6 +2,11 @@
 
 @section('title', 'Kelola Rekomendasi - ' . (isset($temuan) ? $temuan->temuan_judul : $pemeriksaan->pemeriksaan_judul))
 
+@push('styles')
+    <!-- Quill.js CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+@endpush
+
 @section('content')
     <style>
         .table-responsive {
@@ -134,18 +139,41 @@
                     </div>
                 </div>
                 @if (isset($temuan))
-                    <div class="card mb-3">
-                        <div class="card-header header-gradient-success text-black">
-                            <h6 class="card-title mb-0">Temuan</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="row align-items-center">
+                <div class="accordion mb-3" id="accordionTemuan">
+                    <div class="accordion-item border-0">
 
-                                {{ $temuan->temuan_judul }}
+                        <!-- HEADER -->
+                        <h6 class="accordion-header mb-0" id="headingTemuan">
+                            <button class="accordion-button header-gradient-success text-black"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseTemuan"
+                                    aria-expanded="false"
+                                    aria-controls="collapseTemuan">
+                                Temuan
+                            </button>
+                        </h6>
 
+                        <!-- BODY (YANG PUNYA FRAME) -->
+                        <div id="collapseTemuan"
+                            class="accordion-collapse collapse"
+                            aria-labelledby="headingTemuan"
+                            data-bs-parent="#accordionTemuan">
+
+                            <div class="accordion-body border rounded-bottom"
+                                style="white-space: pre-line; border-color: #dee2e6;">
+                                {{ strip_tags(
+                                    str_replace(
+                                        ['<br>', '<br/>', '<br />', '&nbsp;'],
+                                        ["\n", "\n", "\n", ' '],
+                                        html_entity_decode($temuan->temuan_judul)
+                                    )
+                                ) }}
                             </div>
+
                         </div>
                     </div>
+                </div>
                 @endif
 
 
@@ -188,8 +216,15 @@
                                                     @if ($item->rekomendasi_kirim === 'Y') disabled @endif>
                                             </td>
                                             <td>{{ $index + 1 }}</td>
-                                            <td>
-                                                <p>{{ $item->rekomendasi_judul }}</p>
+                                            <td style="white-space: pre-line;">
+                                                                            {{ strip_tags(
+                                            str_replace(
+                                                ['<br>', '<br/>', '<br />', '&nbsp;'],
+                                                ["\n", "\n", "\n", ' '],
+                                                html_entity_decode($item->rekomendasi_judul)
+                                            )
+                                        ) }}
+
                                             </td>
                                             <td>
                                                 @if ($item->rekomendasi_tgl_deadline)
@@ -276,8 +311,8 @@
                             <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="rekomendasi_judul" class="form-label">Judul Rekomendasi *</label>
-                                    <textarea type="text" class="form-control" name="rekomendasi_judul" id="rekomendasi_judul" rows="6"
-                                        style="min-height: 140px;" required></textarea>
+                                    <div id="editor_rekomendasi_judul" style="min-height: 150px;"></div>
+                                    <input type="hidden" name="rekomendasi_judul" id="rekomendasi_judul" required>
                                 </div>
                             </div>
                         </div>
@@ -357,8 +392,8 @@
                             <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="edit_rekomendasi_judul" class="form-label">Judul Rekomendasi *</label>
-                                    <textarea class="form-control" name="rekomendasi_judul" id="edit_rekomendasi_judul" rows="6"
-                                        style="min-height: 140px;" required></textarea>
+                                    <div id="editor_edit_rekomendasi_judul" style="min-height: 150px;"></div>
+                                    <input type="hidden" name="rekomendasi_judul" id="edit_rekomendasi_judul" required>
                                 </div>
                             </div>
                         </div>
@@ -453,7 +488,31 @@
 @endsection
 
 @push('scripts')
+    <!-- Quill.js JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <style>
+        .ql-editor {
+            min-height: 150px;
+        }
+    </style>
     <script>
+        // Initialize Quill editors
+        let quillRekomendasiJudul, quillEditRekomendasiJudul;
+
+        // Quill toolbar configuration
+        const toolbarOptions = [
+            ['bold', 'italic', 'underline'],
+            [{
+                'list': 'ordered'
+            }, {
+                'list': 'bullet'
+            }],
+            [{
+                'header': [1, 2, 3, false]
+            }],
+            ['clean']
+        ];
+
         $(document).ready(function() {
             // Initialize DataTable
             $('#rekomendasiTable').DataTable({
@@ -482,6 +541,37 @@
                     "orderable": false,
                     "targets": [4]
                 }]
+            });
+
+            // Initialize Add Modal Editor
+            quillRekomendasiJudul = new Quill('#editor_rekomendasi_judul', {
+                theme: 'snow',
+                modules: {
+                    toolbar: toolbarOptions
+                }
+            });
+
+            // Initialize Edit Modal Editor
+            quillEditRekomendasiJudul = new Quill('#editor_edit_rekomendasi_judul', {
+                theme: 'snow',
+                modules: {
+                    toolbar: toolbarOptions
+                }
+            });
+
+            // Sync Quill content to hidden input on form submit (Add Modal)
+            $('#addRekomendasiModal form').on('submit', function() {
+                $('#rekomendasi_judul').val(quillRekomendasiJudul.root.innerHTML);
+            });
+
+            // Sync Quill content to hidden input on form submit (Edit Modal)
+            $('#editRekomendasiForm').on('submit', function() {
+                $('#edit_rekomendasi_judul').val(quillEditRekomendasiJudul.root.innerHTML);
+            });
+
+            // Clear Add Modal editor when modal is closed
+            $('#addRekomendasiModal').on('hidden.bs.modal', function() {
+                quillRekomendasiJudul.setContents([]);
             });
 
             // Set default date to today
@@ -538,8 +628,8 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Judul
-                    $('#edit_rekomendasi_judul').val(data.rekomendasi_judul || '');
+                    // Set Quill editor content for Edit Modal
+                    quillEditRekomendasiJudul.root.innerHTML = data.rekomendasi_judul || '';
                     // Tanggal
                     $('#edit_rekomendasi_tgl').val(toInputDate(data.rekomendasi_tgl));
                     $('#edit_rekomendasi_tgl_deadline').val(toInputDate(data.rekomendasi_tgl_deadline));

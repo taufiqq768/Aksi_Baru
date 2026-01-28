@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@push('styles')
+    <!-- Quill.js CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+@endpush
+
 @section('content')
     <style>
         .info-card {
@@ -73,63 +78,116 @@
                     </div>
                 </div>
 
-                <div class="card mb-3">
-                    <div class="card-header header-gradient-success text-black">
-                        <h6 class="card-title mb-0">Temuan</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col-md-12">
-                                {{ $rekomendasi->temuan->temuan_judul ?? '-' }}
+                <div class="accordion mb-3" id="accordionTemuan">
+                    <div class="accordion-item border-0">
+
+                        <!-- HEADER -->
+                        <h6 class="accordion-header mb-0" id="headingTemuan">
+                            <button class="accordion-button header-gradient-success text-black"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseTemuan"
+                                    aria-expanded="false"
+                                    aria-controls="collapseTemuan">
+                                Temuan
+                            </button>
+                        </h6>
+
+                        <!-- BODY (YANG PUNYA FRAME) -->
+                        <div id="collapseTemuan"
+                            class="accordion-collapse collapse"
+                            aria-labelledby="headingTemuan"
+                            data-bs-parent="#accordionTemuan">
+
+                            <div class="accordion-body border rounded-bottom"
+                                style="white-space: pre-line; border-color: #dee2e6;">
+                                {{ strip_tags(
+                                    str_replace(
+                                        ['<br>', '<br/>', '<br />', '&nbsp;'],
+                                        ["\n", "\n", "\n", ' '],
+                                        html_entity_decode($rekomendasi->temuan->temuan_judul)
+                                    )
+                                ) }}
                             </div>
+
                         </div>
                     </div>
                 </div>
 
 
                 <!-- Info Rekomendasi -->
-                <div class="card mb-3">
-                    <div class="card-header header-gradient-magenta text-black">
-                        <h6 class="card-title mb-0">Rekomendasi</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row mb-1">
-                            <div class="col-md-12">{{ $rekomendasi->rekomendasi_judul }}</div>
-                        </div>
-                        <div class="row mb-3">
+                <div class="accordion mb-3" id="rekomendasiAccordion">
+                    <div class="accordion-item">
+                        <!-- HEADER (selalu tampil) -->
+                        <h6 class="accordion-header mb-0" id="headingRekomendasi">
+                            <button class="accordion-button collapsed header-gradient-magenta text-black"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseRekomendasi"
+                                    aria-expanded="false"
+                                    aria-controls="collapseRekomendasi">
+                                Rekomendasi
+                            </button>
+                        </h6>
 
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="row mb-1">
-                            <div class="col-md-2 fw-bold">Deadline Penyelesaian</div>
-                            <div class="col-md-10">
-                                {{ $rekomendasi->rekomendasi_tgl_deadline ? $rekomendasi->rekomendasi_tgl_deadline->format('d/m/Y') : '-' }}
-                                @if ($rekomendasi->is_overdue)
-                                    <span class="badge bg-danger ms-2">Terlambat</span>
-                                @endif
+                        <!-- YANG DI-COLLAPSE: BODY + FOOTER -->
+                        <div id="collapseRekomendasi"
+                            class="accordion-collapse collapse"
+                            aria-labelledby="headingRekomendasi"
+                            data-bs-parent="#rekomendasiAccordion">
+
+                            <!-- BODY -->
+                            <div class="accordion-body">
+                                <div class="row align-items-center" style="white-space: pre-line;">
+                                    {{ strip_tags(
+                                        str_replace(
+                                            ['<br>', '<br/>', '<br />', '&nbsp;'],
+                                            ["\n", "\n", "\n", ' '],
+                                            html_entity_decode($rekomendasi->rekomendasi_judul)
+                                        )
+                                    ) }}
+                                </div>
                             </div>
-                        </div>
-                        <div class="row mb-1">
-                            <div class="col-md-2 fw-bold">Status</div>
-                            <div class="col-md-10">
-                                @switch($rekomendasi->rekomendasi_status)
-                                    @case('Belum di Tindak Lanjut')
-                                        <span class="badge bg-danger">Belum di Tindak Lanjut</span>
-                                    @break
 
-                                    @case('Belum Sesuai')
-                                        <span class="badge bg-warning">Belum Sesuai</span>
-                                    @break
+                            <!-- FOOTER -->
+                            <div class="accordion-footer p-3" style="background-color: #dddddfff;">
+                                <div class="row mb-1">
+                                    <div class="col-md-2 fw-bold">Deadline Penyelesaian</div>
+                                    <div class="col-md-10">
+                                        {{ $rekomendasi->rekomendasi_tgl_deadline
+                                            ? $rekomendasi->rekomendasi_tgl_deadline->format('d/m/Y')
+                                            : '-' }}
+                                        @if ($rekomendasi->is_overdue)
+                                            <span class="badge bg-danger ms-2">Terlambat</span>
+                                        @endif
+                                    </div>
+                                </div>
 
-                                    @case('Sesuai')
-                                        <span class="badge bg-primary">Sesuai</span>
-                                    @break
-                                @endswitch
+                                <div class="row mb-1">
+                                    <div class="col-md-2 fw-bold">Status</div>
+                                    <div class="col-md-10">
+                                        @switch($rekomendasi->rekomendasi_status)
+                                            @case('Belum di Tindak Lanjut')
+                                                <span class="badge bg-danger">Belum di Tindak Lanjut</span>
+                                                @break
+
+                                            @case('Belum Sesuai')
+                                                <span class="badge bg-warning">Belum Sesuai</span>
+                                                @break
+
+                                            @case('Sesuai')
+                                                <span class="badge bg-primary">Sesuai</span>
+                                                @break
+                                        @endswitch
+                                    </div>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
+
+
 
                 <!-- Daftar Tindak Lanjut -->
                 <div class="card">
@@ -159,7 +217,16 @@
                                     @forelse ($tindakLanjut as $index => $tl)
                                         <tr>
                                             {{-- <td>{{ $index + 1 }}</td> --}}
-                                            <td>{{ $tl->tl_deskripsi }}</td>
+                                            <!-- <td>{{ $tl->tl_deskripsi }}</td> -->
+                                            <td style="white-space: pre-line;">
+                                            {{ strip_tags(
+                                                str_replace(
+                                                    ['<br>', '<br/>', '<br />', '&nbsp;'],
+                                                    ["\n", "\n", "\n", ' '],
+                                                    html_entity_decode($tl->tl_deskripsi)
+                                                )
+                                            ) }} 
+                                            </td>
                                             {{-- Di dalam tabel kolom Lampiran Dokumen --}}
                                             <td>
                                                 {{-- Ambil semua upload untuk tl yang sedang dirender --}}
@@ -236,8 +303,79 @@
 @endsection
 
 @push('scripts')
+    <!-- Quill.js JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <style>
+        .ql-editor {
+            min-height: 150px;
+        }
+    </style>
     <script>
+        // Initialize Quill editors
+        let quillTlDeskripsi, quillEditTlDeskripsi, quillTlTanggapan;
+
+        // Quill toolbar configuration
+        const toolbarOptions = [
+            ['bold', 'italic', 'underline'],
+            [{
+                'list': 'ordered'
+            }, {
+                'list': 'bullet'
+            }],
+            [{
+                'header': [1, 2, 3, false]
+            }],
+            ['clean']
+        ];
+
         window.addEventListener('load', function() {
+            // Initialize Quill editors
+            quillTlDeskripsi = new Quill('#editor_tl_deskripsi', {
+                theme: 'snow',
+                modules: {
+                    toolbar: toolbarOptions
+                }
+            });
+
+            quillEditTlDeskripsi = new Quill('#editor_edit_tl_deskripsi', {
+                theme: 'snow',
+                modules: {
+                    toolbar: toolbarOptions
+                }
+            });
+
+            quillTlTanggapan = new Quill('#editor_tl_tanggapan', {
+                theme: 'snow',
+                modules: {
+                    toolbar: toolbarOptions
+                }
+            });
+
+            // Sync Quill content to hidden input on form submit (Add Modal)
+            document.getElementById('addTindaklanjutForm').addEventListener('submit', function() {
+                document.getElementById('tl_deskripsi').value = quillTlDeskripsi.root.innerHTML;
+            });
+
+            // Sync Quill content to hidden input on form submit (Edit Modal)
+            document.getElementById('editTindaklanjutForm').addEventListener('submit', function() {
+                document.getElementById('edit_tl_deskripsi').value = quillEditTlDeskripsi.root.innerHTML;
+            });
+
+            // Sync Quill content to hidden input on form submit (Tanggapan Modal)
+            document.getElementById('tanggapanTindaklanjutForm').addEventListener('submit', function() {
+                document.getElementById('tl_tanggapan').value = quillTlTanggapan.root.innerHTML;
+            });
+
+            // Clear Add Modal editor when modal is closed
+            document.getElementById('addTindaklanjutModal').addEventListener('hidden.bs.modal', function() {
+                quillTlDeskripsi.setContents([]);
+            });
+
+            // Clear Tanggapan Modal editor when modal is closed
+            document.getElementById('tanggapanTindaklanjutModal').addEventListener('hidden.bs.modal', function() {
+                quillTlTanggapan.setContents([]);
+            });
+
             if (window.jQuery && $.fn && $.fn.DataTable) {
                 $('#tlTable').DataTable({
                     language: {
@@ -311,7 +449,8 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Deskripsi</label>
-                        <textarea class="form-control" name="tl_deskripsi" rows="4" required></textarea>
+                        <div id="editor_tl_deskripsi" style="min-height: 150px;"></div>
+                        <input type="hidden" name="tl_deskripsi" id="tl_deskripsi" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Lampiran Dokumen</label>
@@ -348,7 +487,8 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Tanggapan Auditor</label>
-                        <textarea class="form-control" name="tl_tanggapan" rows="4" required></textarea>
+                        <div id="editor_tl_tanggapan" style="min-height: 150px;"></div>
+                        <input type="hidden" name="tl_tanggapan" id="tl_tanggapan" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Status Tindak Lanjut</label>
@@ -384,7 +524,8 @@
                 <div class="modal-body" id="editTindaklanjutContent">
                     <div class="mb-3">
                         <label class="form-label">Deskripsi</label>
-                        <textarea class="form-control" name="tl_deskripsi" id="edit_tl_deskripsi" rows="4" required></textarea>
+                        <div id="editor_edit_tl_deskripsi" style="min-height: 150px;"></div>
+                        <input type="hidden" name="tl_deskripsi" id="edit_tl_deskripsi" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Link Dokumen</label>
@@ -449,7 +590,8 @@
                 })
                 .then(res => res.ok ? res.json() : Promise.reject(res))
                 .then(tl => {
-                    document.getElementById('edit_tl_deskripsi').value = tl.tl_deskripsi || '';
+                    // Set Quill editor content for Edit Modal
+                    quillEditTlDeskripsi.root.innerHTML = tl.tl_deskripsi || '';
                     document.getElementById('edit_tl_link').value = tl.tl_link || '';
 
                     const uploads = tl.uploads || [];
@@ -513,7 +655,8 @@
                 })
                 .then(res => res.ok ? res.json() : Promise.reject(res))
                 .then(tl => {
-                    document.getElementById('edit_tl_deskripsi').value = tl.tl_deskripsi || '';
+                    // Set Quill editor content for Edit Modal
+                    quillEditTlDeskripsi.root.innerHTML = tl.tl_deskripsi || '';
                     document.getElementById('edit_tl_link').value = tl.tl_link || '';
 
                     const uploads = tl.uploads || [];

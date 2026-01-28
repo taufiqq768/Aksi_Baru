@@ -1,16 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PemeriksaanController;
 use App\Http\Controllers\TemuanController;
 use App\Http\Controllers\RekomendasiController;
 use App\Http\Controllers\LhaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TlController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\BidangTemuanController;
+use App\Http\Controllers\SebabController;
+use App\Http\Controllers\CosoController;
+use App\Http\Controllers\TemuController;
+use App\Http\Controllers\KlasifikasiAbController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Dashboard route
+Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 // Authentication routes (simple)
 Route::get('/login', [\App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
@@ -63,3 +69,53 @@ Route::post('/tindak-lanjut', [TlController::class, 'store'])->name('tl.store') 
 Route::put('/tindak-lanjut/{id}', [TlController::class, 'update'])->name('tl.update');
 Route::post('/tindak-lanjut/{id}/tanggapan', [TlController::class, 'tanggapan'])->name('tl.tanggapan');
 Route::post('/tindak-lanjut/{id}/publish-verif', [TlController::class, 'publishVerif'])->name('tl.publish-verif');
+
+// Master Data Routes
+// Manajemen User
+Route::get('/master/user', [UserController::class, 'index'])->name('user.index');
+Route::post('/master/user', [UserController::class, 'store'])->name('user.store');
+Route::get('/master/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
+Route::put('/master/user/{id}', [UserController::class, 'update'])->name('user.update');
+Route::delete('/master/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+
+// Unit Kerja
+Route::get('/master/unit', [UnitController::class, 'index'])->name('unit.index');
+Route::post('/master/unit', [UnitController::class, 'store'])->name('unit.store');
+Route::get('/master/unit/{id}/edit', [UnitController::class, 'edit'])->name('unit.edit');
+Route::put('/master/unit/{id}', [UnitController::class, 'update'])->name('unit.update');
+Route::delete('/master/unit/{id}', [UnitController::class, 'destroy'])->name('unit.destroy');
+
+// Bidang Temuan
+Route::get('/master/bidang', [BidangTemuanController::class, 'index'])->name('bidang.index');
+Route::post('/master/bidang', [BidangTemuanController::class, 'store'])->name('bidang.store');
+Route::get('/master/bidang/{id}/edit', [BidangTemuanController::class, 'edit'])->name('bidang.edit');
+Route::put('/master/bidang/{id}', [BidangTemuanController::class, 'update'])->name('bidang.update');
+Route::delete('/master/bidang/{id}', [BidangTemuanController::class, 'destroy'])->name('bidang.destroy');
+
+// Master Penyebab
+Route::get('/master/sebab', [SebabController::class, 'index'])->name('sebab.index');
+Route::post('/master/sebab', [SebabController::class, 'store'])->name('sebab.store');
+Route::get('/master/sebab/{id}/edit', [SebabController::class, 'edit'])->name('sebab.edit');
+Route::put('/master/sebab/{id}', [SebabController::class, 'update'])->name('sebab.update');
+Route::delete('/master/sebab/{id}', [SebabController::class, 'destroy'])->name('sebab.destroy');
+
+// Master COSO
+Route::get('/master/coso', [CosoController::class, 'index'])->name('coso.index');
+Route::post('/master/coso', [CosoController::class, 'store'])->name('coso.store');
+Route::get('/master/coso/{id}/edit', [CosoController::class, 'edit'])->name('coso.edit');
+Route::put('/master/coso/{id}', [CosoController::class, 'update'])->name('coso.update');
+Route::delete('/master/coso/{id}', [CosoController::class, 'destroy'])->name('coso.destroy');
+
+// Master Temuan
+Route::get('/master/temu', [TemuController::class, 'index'])->name('temu.index');
+Route::post('/master/temu', [TemuController::class, 'store'])->name('temu.store');
+Route::get('/master/temu/{id}/edit', [TemuController::class, 'edit'])->name('temu.edit');
+Route::put('/master/temu/{id}', [TemuController::class, 'update'])->name('temu.update');
+Route::delete('/master/temu/{id}', [TemuController::class, 'destroy'])->name('temu.destroy');
+
+// Master AB
+Route::get('/master/ab', [KlasifikasiAbController::class, 'index'])->name('ab.index');
+Route::post('/master/ab', [KlasifikasiAbController::class, 'store'])->name('ab.store');
+Route::get('/master/ab/{id}/edit', [KlasifikasiAbController::class, 'edit'])->name('ab.edit');
+Route::put('/master/ab/{id}', [KlasifikasiAbController::class, 'update'])->name('ab.update');
+Route::delete('/master/ab/{id}', [KlasifikasiAbController::class, 'destroy'])->name('ab.destroy');

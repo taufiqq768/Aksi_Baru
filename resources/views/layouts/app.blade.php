@@ -25,9 +25,10 @@
         :root {
             --sidebar-width: 280px;
             --header-height: 70px;
-            --primary-color: #6366f1;
-            --primary-light: #818cf8;
-            --primary-dark: #4f46e5;
+            /* Updated to match login theme colors */
+            --primary-color: #088395;
+            --primary-light: #05bfdb;
+            --primary-dark: #0a4d68;
             --secondary-color: #64748b;
             --accent-color: #06b6d4;
             --success-color: #10b981;
@@ -68,7 +69,8 @@
             left: 0;
             height: 100vh;
             width: var(--sidebar-width);
-            background: linear-gradient(180deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            /* Updated gradient to match login page */
+            background: linear-gradient(135deg, #0a4d68 0%, #088395 50%, #05bfdb 100%);
             backdrop-filter: blur(10px);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1000;
@@ -77,8 +79,8 @@
         }
 
         [data-bs-theme="dark"] .sidebar {
-            background: linear-gradient(180deg, var(--surface-dark) 0%, #0f172a 100%);
-            border-right: 1px solid var(--border-dark);
+            background: linear-gradient(135deg, #0a4d68 0%, #088395 50%, #05bfdb 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .sidebar.collapsed {
@@ -360,6 +362,59 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
+        /* Submenu Styles */
+        .nav-item.has-submenu>.nav-link {
+            position: relative;
+        }
+
+        .nav-item.has-submenu>.nav-link::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 1rem;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-item.has-submenu.open>.nav-link::after {
+            transform: rotate(180deg);
+        }
+
+        .submenu {
+            list-style: none;
+            padding-left: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-item.has-submenu.open .submenu {
+            max-height: 500px;
+        }
+
+        .submenu .nav-item {
+            margin: 0.125rem 1rem 0.125rem 2rem;
+        }
+
+        .submenu .nav-link {
+            padding: 0.625rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        .submenu .nav-link i {
+            width: 16px;
+            font-size: 0.85rem;
+        }
+
+        .sidebar.collapsed .nav-item.has-submenu>.nav-link::after {
+            display: none;
+        }
+
+        .sidebar.collapsed .submenu {
+            display: none;
+        }
+
         /* Animation */
         .fade-in {
             animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -395,15 +450,16 @@
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="#" class="logo">
+            <a href="/" class="logo">
                 <i class="fas fa-search-dollar"></i>
-                <span class="logo-text ms-2">APP BARU</span>
+                <span class="logo-text ms-2">AKSI</span>
             </a>
         </div>
 
         <ul class="sidebar-nav">
             <li class="nav-item">
-                <a href="#" class="nav-link active">
+                <a href="{{ route('dashboard') }}"
+                    class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
@@ -414,17 +470,58 @@
                     <span>Data Pemeriksaan</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="fas fa-users"></i>
-                    <span>Manajemen User</span>
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link" onclick="toggleSubmenu(event, this)">
+                    <i class="fas fa-database"></i>
+                    <span>Master Data</span>
                 </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
-                    <i class="fas fa-building"></i>
-                    <span>Unit Kerja</span>
-                </a>
+                <ul class="submenu">
+                    <li class="nav-item">
+                        <a href="{{ route('user.index') }}" class="nav-link">
+                            <i class="fas fa-users"></i>
+                            <span>Manajemen User</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('unit.index') }}" class="nav-link">
+                            <i class="fas fa-building"></i>
+                            <span>Unit Kerja</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('bidang.index') }}" class="nav-link">
+                            <i class="fas fa-layer-group"></i>
+                            <span>Master Bidang</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('sebab.index') }}" class="nav-link">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Master Penyebab</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('coso.index') }}" class="nav-link">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Master COSO</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('temu.index') }}" class="nav-link">
+                            <i class="fas fa-search"></i>
+                            <span>Master Temuan</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('ab.index') }}" class="nav-link">
+                            <i class="fas fa-file-contract"></i>
+                            <span>Master AB</span>
+                        </a>
+                    </li>
+
+                </ul>
             </li>
             <li class="nav-item">
                 <a href="#" class="nav-link">
@@ -456,7 +553,7 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="page-info">
-                    <h5 class="mb-0">@yield('page-title', 'Dashboard')</h5>
+                    <!-- <h5 class="mb-0">@yield('page-title', 'Dashboard')</h5> -->
                 </div>
             </div>
 
@@ -468,6 +565,7 @@
                 <div class="dropdown">
                     <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         <i class="fas fa-user-circle fa-lg"></i>
+
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
@@ -475,7 +573,13 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                        <li>
+                            <a class="dropdown-item" href=#
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                @csrf
+                            </form>
                         </li>
                     </ul>
                 </div>
@@ -507,7 +611,7 @@
 
     <script>
         // Sidebar Toggle
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.getElementById('sidebarToggle').addEventListener('click', function () {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
 
@@ -519,7 +623,7 @@
         });
 
         // Theme Toggle
-        document.getElementById('themeToggle').addEventListener('click', function() {
+        document.getElementById('themeToggle').addEventListener('click', function () {
             const html = document.documentElement;
             const themeIcon = document.getElementById('themeIcon');
             const currentTheme = html.getAttribute('data-bs-theme');
@@ -536,7 +640,7 @@
         });
 
         // Load saved preferences
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Load theme
             const savedTheme = localStorage.getItem('theme') || 'light';
             const html = document.documentElement;
@@ -564,13 +668,30 @@
 
         // Mobile sidebar toggle
         if (window.innerWidth <= 768) {
-            document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('sidebarToggle').addEventListener('click', function () {
                 document.getElementById('sidebar').classList.toggle('show');
             });
         }
 
+        // Submenu toggle function
+        function toggleSubmenu(event, element) {
+            event.preventDefault();
+            const parentLi = element.parentElement;
+            const wasOpen = parentLi.classList.contains('open');
+
+            // Close all other submenus
+            document.querySelectorAll('.nav-item.has-submenu').forEach(item => {
+                item.classList.remove('open');
+            });
+
+            // Toggle current submenu
+            if (!wasOpen) {
+                parentLi.classList.add('open');
+            }
+        }
+
         // Close mobile sidebar when clicking outside
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (window.innerWidth <= 768) {
                 const sidebar = document.getElementById('sidebar');
                 const sidebarToggle = document.getElementById('sidebarToggle');
