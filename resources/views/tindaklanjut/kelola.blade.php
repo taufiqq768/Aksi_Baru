@@ -24,6 +24,13 @@
             background: linear-gradient(135deg, #e43888 0%, #741616 100%);
         }
     </style>
+
+     @if (auth()->user()->user_level === 'operator' || auth()->user()->user_level === 'verifikator')
+    <style>
+        #btnTanggapanTL { display: none; }
+    </style>
+    @endif
+
     <div class="container-fluid">
         <div class="row mt-3">
             <div class="col-md-12">
@@ -225,7 +232,7 @@
                                                     ["\n", "\n", "\n", ' '],
                                                     html_entity_decode($tl->tl_deskripsi)
                                                 )
-                                            ) }} 
+                                            ) }}
                                             </td>
                                             {{-- Di dalam tabel kolom Lampiran Dokumen --}}
                                             <td>
@@ -271,7 +278,7 @@
                                                     {{ $tl->tl_publish_verif == 'Y' ? 'disabled' : '' }}>
                                                     <i class="fas fa-paper-plane"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                                <button type="button" id="btnTanggapanTL" class="btn btn-sm btn-outline-primary"
                                                     data-bs-toggle="modal" data-bs-target="#tanggapanTindaklanjutModal"
                                                     data-tl-id="{{ $tl->tl_id }}" title="Tanggapan Auditor">
                                                     <i class="fas fa-reply"></i>
@@ -397,7 +404,7 @@
                     },
                     pageLength: 25,
                     order: [
-                        [2, 'desc']
+                        [0, 'asc']
                     ] // kolom Tanggal
                 });
             } else {

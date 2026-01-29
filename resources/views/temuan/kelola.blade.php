@@ -68,7 +68,16 @@
         .header-gradient-success {
             background: linear-gradient(135deg, #67b853 0%, #054d23 100%);
         }
+
+
+
     </style>
+
+    @if (auth()->user()->user_level === 'operator' || auth()->user()->user_level === 'verifikator')
+    <style>
+        .kolom-status { display: none; }
+    </style>
+    @endif
 
     <div class="container-fluid">
         <div class="row">
@@ -131,7 +140,9 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Judul Temuan</th>
-                                        <th>Status</th>
+
+                                        <th class="kolom-status">Status Kirim</th>
+
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -149,13 +160,19 @@
                                         ) }}
                                                                             <!-- {{ strip_tags($item->temuan_judul) }} -->
                                                                         </td>
-                                                                        <td>
-                                                                            @if ($item->temuan_kirim == 'Y')
-                                                                                <span class="badge bg-success">Terkirim</span>
+
+                                                                        <td class="kolom-status">
+                                                                            @if ($item->temuan_kirim == 'N' && $item->temuan_publish_kabag == 'N')
+                                                                                <span class="badge bg-success">Belum Terkirim</span>
+                                                                            @elseif ($item->temuan_kirim == 'Y' && $item->temuan_publish_kabag == 'N')
+                                                                                <span class="badge bg-warning">Terkirim ke Kadiv</span>
+                                                                            @elseif ($item->temuan_kirim == 'Y' && $item->temuan_publish_kabag == 'Y')
+                                                                                <span class="badge bg-primary">Terkirim ke Auditee</span>
                                                                             @else
-                                                                                <span class="badge bg-warning">Draft</span>
+                                                                                <span class="badge bg-secondary">Status Tidak Diketahui</span>
                                                                             @endif
                                                                         </td>
+
                                                                         <td>
                                                                             <!-- Kolom aksi pada setiap baris temuan -->
                                                                             <div class="btn-group" role="group">
@@ -549,7 +566,7 @@
                 },
                 "pageLength": 25,
                 "order": [
-                    [1, "desc"]
+                    [0, "asc"]
                 ],
                 "columnDefs": [{
                     "orderable": false,

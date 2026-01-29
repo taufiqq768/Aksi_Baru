@@ -7,20 +7,32 @@ use App\Models\User;
 use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class PemeriksaanController extends Controller
 {
     /**
      * Display a listing of the pemeriksaan.
+     * Filter data berdasarkan role dan unit user yang login
      */
     public function index()
     {
-        $pemeriksaan = Pemeriksaan::with('unit')->get();
+        // Debug session dan auth
+
+        $user = auth()->user();
+
+
+        // Query builder untuk pemeriksaan
+        $query = Pemeriksaan::with('unit');
+
+        $pemeriksaan = $query->orderBy('pemeriksaan_id')->get();
+
+        // Data untuk form (tidak perlu difilter)
         $users = User::all();
         $units = Unit::all();
         $anggotas = User::where('user_level', 'spi')
-        ->where('user_aktif', 'Y')
-        ->get();
+            ->where('user_aktif', 'Y')
+            ->get();
 
         return view('pemeriksaan.index', compact('pemeriksaan', 'users', 'units', 'anggotas'));
     }

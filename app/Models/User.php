@@ -144,6 +144,16 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the unique identifier for the user.
+     *
+     * @return mixed
+     */
+    public function getAuthIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
      * Get the name of the unique identifier for the user.
      * This tells Laravel to use 'user_nik' instead of 'email' for authentication.
      *
@@ -151,7 +161,7 @@ class User extends Authenticatable
      */
     public function getAuthIdentifierName()
     {
-        return 'user_nik';
+        return $this->getKeyName();
     }
 
 }

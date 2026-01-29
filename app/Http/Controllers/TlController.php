@@ -128,15 +128,19 @@ class TlController extends Controller
         ]);
 
         $tl = Tl::findOrFail($id);
+        $rekomendasi = Rekomendasi::find($tl->rekomendasi_id);
 
-        $tl->tl_tanggapan = $request->tl_tanggapan;
-        $tl->tl_catatan = $request->tl_catatan;
+        $tl->tl_tanggapan = $request->tl_tanggapan ?? '-';
+        $tl->tl_catatan = '';
         $tl->tl_tanggapan_tgl = now();
-        $tl->tl_catatan_tgl = now();
+        $tl->tl_catatan_tgl = '1900-01-01';
         $tl->tl_status = $request->tl_status;
         $tl->tl_status_cache = $request->tl_status;
         $tl->tl_status_tgl = now();
+        $rekomendasi->rekomendasi_status = $request->tl_status;
+
         $tl->save();
+        $rekomendasi->save();
 
         return redirect()
             ->route('tl.byRekomendasi', $tl->rekomendasi_id)

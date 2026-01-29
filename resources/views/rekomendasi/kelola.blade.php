@@ -70,6 +70,15 @@
         }
     </style>
 
+    @if (auth()->user()->user_level === 'operator' || auth()->user()->user_level === 'verifikator')
+    <style>
+        .kolom-status { display: none; }
+        .kolom-cb { display: none; }
+        #btnKirimSelected { display: none; }
+        #btnTambahRekomendasi { display: none; }
+    </style>
+    @endif
+
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
@@ -186,7 +195,7 @@
                             <button type="button" id="btnKirimSelected" class="btn btn-success" disabled>
                                 <i class="fas fa-paper-plane"></i> Kirim
                             </button>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            <button type="button" id="btnTambahRekomendasi" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#addRekomendasiModal">
                                 <i class="fas fa-plus"></i> Tambah Rekomendasi
                             </button>
@@ -197,21 +206,21 @@
                             <table id="rekomendasiTable" class="table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th data-orderable="false" data-searchable="false">
+                                        <th class="kolom-cb" data-orderable="false" data-searchable="false">
                                             <input type="checkbox" id="selectAllRekomendasi">
                                         </th>
                                         <th>No</th>
                                         <th>Judul Rekomendasi</th>
                                         <th>Deadline</th>
                                         <th>Status TL</th>
-                                        <th>Status Kirim</th>
+                                        <th class="kolom-status">Status Kirim</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($rekomendasi as $index => $item)
                                         <tr>
-                                            <td>
+                                            <td class="kolom-cb">
                                                 <input type="checkbox" class="rek-check" value="{{ $item->rekomendasi_id }}"
                                                     @if ($item->rekomendasi_kirim === 'Y') disabled @endif>
                                             </td>
@@ -251,7 +260,7 @@
                                                     @break
                                                 @endswitch
                                             </td>
-                                            <td>
+                                            <td class="kolom-status">
                                                 @if ($item->rekomendasi_kirim === 'N' && $item->rekomendasi_publish_kabag === 'N')
                                                     <span class="badge bg-danger">Belum dikirim</span>
                                                 @elseif ($item->rekomendasi_kirim === 'Y' && $item->rekomendasi_publish_kabag === 'N')
@@ -535,7 +544,7 @@
                 },
                 "pageLength": 25,
                 "order": [
-                    [2, "desc"]
+                    [1, "asc"]
                 ],
                 "columnDefs": [{
                     "orderable": false,
@@ -738,7 +747,7 @@
                     },
                     "pageLength": 25,
                     "order": [
-                        [2, "desc"]
+                        [1, "asc"]
                     ],
                     "columnDefs": [{
                         "orderable": false,

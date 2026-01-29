@@ -290,7 +290,7 @@ class RekomendasiController extends Controller
         $pemeriksaan = Pemeriksaan::with(['unit', 'lha'])->findOrFail($pemeriksaan_id);
         $rekomendasi = Rekomendasi::with(['temuan', 'user', 'unit'])
             ->where('pemeriksaan_id', $pemeriksaan_id)
-            ->orderBy('rekomendasi_id', 'desc')
+            ->orderBy('rekomendasi_id', 'asc')
             ->get();
 
         $units = Unit::all();

@@ -22,12 +22,63 @@ class TemuanController extends Controller
      */
     public function index()
     {
+        // Debug session dan auth
+        \Log::info('=== Temuan Index Debug ===');
+        \Log::info('Auth Check: ' . (Auth::check() ? 'YES' : 'NO'));
+
+        $user = auth()->user();
+
+        \Log::info('Auth User: ' . ($user ? json_encode(['id' => $user->id_users, 'nik' => $user->user_nik, 'level' => $user->user_level]) : 'NULL'));
+
+        // Query builder untuk pemeriksaan
+        $query = Pemeriksaan::with(['unit', 'lha']);
+
+        // Filter berdasarkan role user
+        if ($user) {
+            \Log::info('User Level: ' . $user->user_level . ', Unit ID: ' . $user->unit_id);
+
+            // Jika user adalah admin/superadmin, tampilkan semua data
+            if (in_array($user->user_level, ['admin', 'superadmin', 'kabagspi'])) {
+                // Tidak ada filter, tampilkan semua
+                \Log::info('Filter: Admin - No filter');
+            }
+            // Jika user adalah SPI atau auditor, tampilkan data yang terkait dengan user tersebut
+            elseif (in_array($user->user_level, ['spi', 'auditor'])) {
+                // Tampilkan pemeriksaan dimana user adalah ketua, pengawas, atau petugas
+                $query->where(function ($q) use ($user) {
+                    $q->where('pemeriksaan_ketua', $user->user_nik)
+                        ->orWhere('pemeriksaan_pengawas', $user->user_nik)
+                        ->orWhere('pemeriksaan_petugas', 'LIKE', '%' . $user->user_nik . '%');
+                });
+                \Log::info('Filter: SPI/Auditor - by user_nik');
+            }
+            // Jika user adalah operator atau verifikator, tampilkan data unit mereka saja
+            elseif (in_array($user->user_level, ['operator', 'verifikator'])) {
+                if ($user->unit_id) {
+                    $query->where('unit_id', $user->unit_id);
+                    \Log::info('Filter: Operator - by unit_id: ' . $user->unit_id);
+                } else {
+                    // Jika tidak ada unit_id, tampilkan data yang dibuat oleh user tersebut
+                    $query->where('user_nik', $user->user_nik);
+                    \Log::info('Filter: Operator - by user_nik (no unit)');
+                }
+            }
+            // Default: tampilkan data yang dibuat oleh user tersebut
+            else {
+                $query->where('user_nik', $user->user_nik);
+                \Log::info('Filter: Default - by user_nik');
+            }
+        } else {
+            \Log::info('Filter: No user - showing all data');
+        }
+
         // Ambil data pemeriksaan dengan jumlah temuan dan data LHA, diurutkan berdasarkan ID
-        $pemeriksaan = Pemeriksaan::with(['unit', 'lha'])
-            ->withCount('temuan')
+        $pemeriksaan = $query->withCount('temuan')
             ->orderBy('pemeriksaan_id', 'asc')
             // ->having('temuan_count', '>', 0) // Hanya tampilkan pemeriksaan yang memiliki temuan
             ->get();
+
+        \Log::info('Pemeriksaan count: ' . count($pemeriksaan));
 
         $units = Unit::all();
         $users = User::all();
@@ -129,12 +180,12 @@ class TemuanController extends Controller
     public function show(string $id)
     {
         $temuan = Temuan::with(['pemeriksaan', 'pemeriksaan.unit', 'user'])->findOrFail($id);
-    
+
         // Pastikan selalu kirim JSON untuk request AJAX/JSON
         if (request()->ajax() || request()->wantsJson()) {
             return response()->json($temuan);
         }
-    
+
         return view('temuan.show', compact('temuan'));
     }
 
@@ -250,7 +301,7 @@ class TemuanController extends Controller
     public function kelola(string $pemeriksaan_id)
     {
         $pemeriksaan = Pemeriksaan::with(['unit', 'temuan'])->findOrFail($pemeriksaan_id);
-        $temuan = $pemeriksaan->temuan;
+        $temuan = $pemeriksaan->temuan->sortBy('temuan_id');
 
         // Load master data for dropdowns
         $bidangTemuan = BidangTemuan::all();
