@@ -466,10 +466,17 @@
             </li>
             <li class="nav-item">
                 <a href="/pemeriksaan" class="nav-link">
-                    <i class="fas fa-clipboard-check"></i>
+                    <i class="fas fa-clipboard-list"></i>
                     <span>Data Pemeriksaan</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="/temuan" class="nav-link">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Data Temuan</span>
+                </a>
+            </li>
+
             <li class="nav-item has-submenu">
                 <a href="#" class="nav-link" onclick="toggleSubmenu(event, this)">
                     <i class="fas fa-database"></i>

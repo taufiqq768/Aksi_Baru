@@ -26,15 +26,15 @@ class TlController extends Controller
         return view('tindaklanjut.kelola', compact('rekomendasi', 'tindakLanjut', 'uploadTls'));
     }
 
-    public function publishVerif(string $id)
+    public function publishSPI(string $id)
     {
         $tl = Tl::findOrFail($id);
 
-        if ($tl->tl_publish_verif === 'Y') {
+        if ($tl->tl_publish_spi === 'Y') {
             return response()->json(['message' => 'Sudah dikirim'], 200);
         }
 
-        $tl->tl_publish_verif = 'Y';
+        $tl->tl_publish_spi = 'Y';
         $tl->save();
 
         return response()->json(['message' => 'Berhasil dikirim'], 200);
@@ -70,7 +70,7 @@ class TlController extends Controller
             'tl_status_cache' => '',
             'tl_status_tgl' => now(),
             'tl_status_publish_kabag' => 'N',
-            'tl_status_kirim' => 'N',
+            'tl_status_kirim' => 'Y',
             'tl_publish_verif' => 'N',
             'tl_publish_spi' => 'N',
             'tl_publish_kabag' => 'N',
@@ -89,7 +89,7 @@ class TlController extends Controller
 
         $tl = Tl::create($data);
 
-                // Tambah fungsi upload file (minimal, tanpa mengubah alur lainnya)
+        // Tambah fungsi upload file (minimal, tanpa mengubah alur lainnya)
         if ($request->hasFile('tl_lampiran')) {
             if (!Storage::disk('public')->exists('tl')) {
                 Storage::disk('public')->makeDirectory('tl');

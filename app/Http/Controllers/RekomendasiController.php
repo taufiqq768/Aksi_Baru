@@ -92,7 +92,7 @@ class RekomendasiController extends Controller
 
 
             // Remove empty values to avoid foreign key constraint issues
-            $data = array_filter($data, function($value, $key) {
+            $data = array_filter($data, function ($value, $key) {
                 // Keep these fields even if empty
                 $keepFields = [
                     'rekomendasi_status',
@@ -201,7 +201,7 @@ class RekomendasiController extends Controller
             }
 
             // Remove empty values to avoid foreign key constraint issues
-            $data = array_filter($data, function($value, $key) {
+            $data = array_filter($data, function ($value, $key) {
                 // Keep these fields even if empty
                 $keepFields = ['rekomendasi_status', 'rekomendasi_tgl_deadline'];
                 if (in_array($key, $keepFields)) {
@@ -344,6 +344,23 @@ class RekomendasiController extends Controller
             'message' => 'Berhasil mengirim rekomendasi',
             'count' => $updated,
             'temuan_count' => $temuanUpdated,
+        ]);
+    }
+
+    public function publishBatch(Request $request)
+    {
+        $ids = $request->input('ids', []);
+        if (!is_array($ids) || empty($ids)) {
+            return response()->json(['message' => 'Tidak ada rekomendasi dipilih'], 400);
+        }
+
+        // Update hanya kolom rekomendasi_publish_kabag secara bulk
+        $updated = Rekomendasi::whereIn('rekomendasi_id', $ids)
+            ->update(['rekomendasi_publish_kabag' => 'Y']);
+
+        return response()->json([
+            'message' => 'Berhasil mempublish rekomendasi',
+            'count' => $updated,
         ]);
     }
 }

@@ -217,6 +217,7 @@
                                         <th>Lampiran Dokumen</th>
                                         <th>Link Dokumen</th>
                                         <th>Status Kirim</th>
+                                        <th>Verifikasi</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -265,17 +266,23 @@
                                                 @if ($tl->tl_publish_verif === 'N' && $tl->tl_publish_spi === 'N')
                                                     <span class="badge bg-danger">Belum dikirim</span>
                                                 @elseif ($tl->tl_publish_verif === 'Y' && $tl->tl_publish_spi === 'N')
-                                                    <span class="badge bg-warning">Terkirim ke Verifikator</span>
+                                                    <span class="badge bg-warning">Menunggu Verifikasi</span>
                                                 @elseif ($tl->tl_publish_verif === 'Y' && $tl->tl_publish_spi === 'Y')
                                                     <span class="badge bg-success">Terkirim ke Auditor</span>
                                                 @else
                                                     <span class="badge bg-danger">Belum dikirim</span>
                                                 @endif
                                             </td>
+                                            <td class="text-center">
+                                                <input type="checkbox" class="form-check-input verif-check" 
+                                                    data-tl-id="{{ $tl->tl_id }}"
+                                                    {{ $tl->tl_publish_spi == 'Y' ? 'disabled checked' : '' }}>
+                                            </td>
                                             <td>
-                                                <button type="button" class="btn btn-sm btn-outline-success"
-                                                    onclick="kirimTindakLanjut('{{ $tl->tl_id }}')" title="Kirim"
-                                                    {{ $tl->tl_publish_verif == 'Y' ? 'disabled' : '' }}>
+                                                <button type="button" class="btn btn-sm btn-outline-success btn-kirim-tl"
+                                                    data-tl-id="{{ $tl->tl_id }}" title="Kirim"
+                                                    {{ $tl->tl_publish_verif == 'Y' ? 'disabled' : '' }}
+                                                    disabled>
                                                     <i class="fas fa-paper-plane"></i>
                                                 </button>
                                                 <button type="button" id="btnTanggapanTL" class="btn btn-sm btn-outline-primary"
@@ -417,7 +424,7 @@
             if (!confirm('Apakah Anda yakin ingin mengirim tindak lanjut ini?')) return;
 
             const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-            fetch('/tindak-lanjut/' + id + '/publish-verif', {
+            fetch('/tindak-lanjut/' + id + '/publish-spi', {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': token,
@@ -437,6 +444,46 @@
                     alert('Terjadi kesalahan saat mengirim. Coba lagi.');
                 });
         }
+
+        // Event listener untuk checkbox verifikasi
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fungsi untuk update status tombol kirim berdasarkan checkbox
+            function updateKirimButtonState() {
+                document.querySelectorAll('.verif-check').forEach(function(checkbox) {
+                    const tlId = checkbox.getAttribute('data-tl-id');
+                    const kirimBtn = document.querySelector('.btn-kirim-tl[data-tl-id="' + tlId + '"]');
+                    
+                    if (kirimBtn && !kirimBtn.hasAttribute('data-permanently-disabled')) {
+                        kirimBtn.disabled = !checkbox.checked;
+                    }
+                });
+            }
+
+            // Tandai tombol yang sudah terkirim sebagai permanently disabled
+            document.querySelectorAll('.btn-kirim-tl[disabled]').forEach(function(btn) {
+                if (btn.closest('tr').querySelector('.verif-check[disabled]')) {
+                    btn.setAttribute('data-permanently-disabled', 'true');
+                }
+            });
+
+            // Event listener untuk setiap checkbox verifikasi
+            document.querySelectorAll('.verif-check').forEach(function(checkbox) {
+                checkbox.addEventListener('change', updateKirimButtonState);
+            });
+
+            // Event listener untuk tombol kirim
+            document.querySelectorAll('.btn-kirim-tl').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const tlId = this.getAttribute('data-tl-id');
+                    if (tlId) {
+                        kirimTindakLanjut(tlId);
+                    }
+                });
+            });
+
+            // Inisialisasi state awal
+            updateKirimButtonState();
+        });
     </script>
 @endpush
 

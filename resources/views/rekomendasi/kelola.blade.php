@@ -75,6 +75,7 @@
         .kolom-status { display: none; }
         .kolom-cb { display: none; }
         #btnKirimSelected { display: none; }
+        #btnPublishSelected { display: none; }
         #btnTambahRekomendasi { display: none; }
     </style>
     @endif
@@ -195,6 +196,9 @@
                             <button type="button" id="btnKirimSelected" class="btn btn-success" disabled>
                                 <i class="fas fa-paper-plane"></i> Kirim
                             </button>
+                            <button type="button" id="btnPublishSelected" class="btn btn-info" disabled>
+                                <i class="fas fa-share"></i> Publish
+                            </button>
                             <button type="button" id="btnTambahRekomendasi" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#addRekomendasiModal">
                                 <i class="fas fa-plus"></i> Tambah Rekomendasi
@@ -208,6 +212,9 @@
                                     <tr>
                                         <th class="kolom-cb" data-orderable="false" data-searchable="false">
                                             <input type="checkbox" id="selectAllRekomendasi">
+                                        </th>
+                                        <th class="kolom-cb" data-orderable="false" data-searchable="false">
+                                            <input type="checkbox" id="selectAllPublish">
                                         </th>
                                         <th>No</th>
                                         <th>Judul Rekomendasi</th>
@@ -223,6 +230,10 @@
                                             <td class="kolom-cb">
                                                 <input type="checkbox" class="rek-check" value="{{ $item->rekomendasi_id }}"
                                                     @if ($item->rekomendasi_kirim === 'Y') disabled @endif>
+                                            </td>
+                                            <td class="kolom-cb">
+                                                <input type="checkbox" class="publish-check" value="{{ $item->rekomendasi_id }}"
+                                                    @if ($item->rekomendasi_publish_kabag === 'Y') disabled @endif>
                                             </td>
                                             <td>{{ $index + 1 }}</td>
                                             <td style="white-space: pre-line;">
@@ -768,11 +779,23 @@
                 $('#btnKirimSelected').prop('disabled', checkedCount === 0);
             }
 
+            function updatePublishButtonState() {
+                const checkedCount = $scopeRows().find('.publish-check:checked').length;
+                $('#btnPublishSelected').prop('disabled', checkedCount === 0);
+            }
+
             function syncHeaderCheckbox() {
                 const $rows = $scopeRows();
                 const totalEnabled = $rows.find('.rek-check:not(:disabled)').length;
                 const checkedEnabled = $rows.find('.rek-check:checked:not(:disabled)').length;
                 $('#selectAllRekomendasi').prop('checked', totalEnabled > 0 && checkedEnabled === totalEnabled);
+            }
+
+            function syncPublishHeaderCheckbox() {
+                const $rows = $scopeRows();
+                const totalEnabled = $rows.find('.publish-check:not(:disabled)').length;
+                const checkedEnabled = $rows.find('.publish-check:checked:not(:disabled)').length;
+                $('#selectAllPublish').prop('checked', totalEnabled > 0 && checkedEnabled === totalEnabled);
             }
 
             function setAllCheckboxes(checked) {
@@ -781,18 +804,34 @@
                 syncHeaderCheckbox();
             }
 
+            function setAllPublishCheckboxes(checked) {
+                $scopeRows().find('.publish-check:not(:disabled)').prop('checked', checked);
+                updatePublishButtonState();
+                syncPublishHeaderCheckbox();
+            }
+
             // Cegah klik header checkbox memicu sort
             $(document).on('click', '#rekomendasiTable thead input#selectAllRekomendasi', function(e) {
                 e.stopPropagation();
             });
 
+            $(document).on('click', '#rekomendasiTable thead input#selectAllPublish', function(e) {
+                e.stopPropagation();
+            });
+
             // Inisialisasi state awal
             updateKirimButtonState();
+            updatePublishButtonState();
             syncHeaderCheckbox();
+            syncPublishHeaderCheckbox();
 
             // Select All (delegation agar aman saat header di-redraw)
             $(document).on('change', '#selectAllRekomendasi', function() {
                 setAllCheckboxes(this.checked);
+            });
+
+            $(document).on('change', '#selectAllPublish', function() {
+                setAllPublishCheckboxes(this.checked);
             });
 
             // Perubahan checkbox baris
@@ -801,10 +840,17 @@
                 syncHeaderCheckbox();
             });
 
+            $(document).on('change', '.publish-check', function() {
+                updatePublishButtonState();
+                syncPublishHeaderCheckbox();
+            });
+
             // Sinkron saat tabel redraw (paging/filter)
             $table.on('draw.dt', function() {
                 syncHeaderCheckbox();
+                syncPublishHeaderCheckbox();
                 updateKirimButtonState();
+                updatePublishButtonState();
             });
 
             // Kirim batch: set rekomendasi_kirim = 'Y' untuk terpilih
@@ -831,6 +877,38 @@
                     })
                     .catch(async (err) => {
                         let msg = 'Terjadi kesalahan saat mengirim rekomendasi';
+                        try {
+                            const j = await err.json();
+                            if (j && j.message) msg = j.message;
+                        } catch (_) {}
+                        alert(msg);
+                    });
+            });
+
+            // Publish batch: set rekomendasi_publish_kabag = 'Y' untuk terpilih
+            $('#btnPublishSelected').on('click', function() {
+                const ids = $scopeRows().find('.publish-check:checked').map(function() {
+                    return this.value;
+                }).get();
+                if (ids.length === 0) return;
+
+                fetch('/rekomendasi/publish-batch', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            ids
+                        })
+                    })
+                    .then(res => res.ok ? res.json() : Promise.reject(res))
+                    .then(data => {
+                        alert(data.message || 'Berhasil mempublish rekomendasi terpilih');
+                        window.location.reload();
+                    })
+                    .catch(async (err) => {
+                        let msg = 'Terjadi kesalahan saat mempublish rekomendasi';
                         try {
                             const j = await err.json();
                             if (j && j.message) msg = j.message;
