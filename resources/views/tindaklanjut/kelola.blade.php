@@ -25,10 +25,25 @@
         }
     </style>
 
-     @if (auth()->user()->user_level === 'operator' || auth()->user()->user_level === 'verifikator')
+     @if (auth()->check() && auth()->user()->user_level === 'operator')
+    <style>
+        .kolom-verifikasi { display: none; }
+        #btnKirimTL { display: none; }
+        #btnTanggapanTL { display: none; }
+    </style>
+    @elseif (auth()->check() && auth()->user()->user_level === 'verifikator')
     <style>
         #btnTanggapanTL { display: none; }
     </style>
+    @elseif (auth()->check() && (auth()->user()->user_level === 'spi' || auth()->user()->user_level === 'kabagspi'))
+    <style>
+        .kolom-verifikasi { display: none; }
+        #btnKirimTL { display: none; }
+        #btnTambahTL { display: none; }
+        #btnEditTL { display: none; }
+        #btnHapusTL { display: none; }
+    </style>
+    
     @endif
 
     <div class="container-fluid">
@@ -202,7 +217,7 @@
                         <h5 class="card-title mb-0">Daftar Tindak Lanjut</h5>
                         <div class="d-flex gap-2">
 
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-primary" id="btnTambahTL" data-bs-toggle="modal"
                                 data-bs-target="#addTindaklanjutModal" {{ $tindakLanjut->isNotEmpty() ? 'disabled' : '' }}>
                                 <i class="fas fa-plus"></i> Tambah Tindak Lanjut
                             </button>
@@ -217,7 +232,7 @@
                                         <th>Lampiran Dokumen</th>
                                         <th>Link Dokumen</th>
                                         <th>Status Kirim</th>
-                                        <th>Verifikasi</th>
+                                        <th class="kolom-verifikasi">Verifikasi</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -273,13 +288,13 @@
                                                     <span class="badge bg-danger">Belum dikirim</span>
                                                 @endif
                                             </td>
-                                            <td class="text-center">
+                                            <td class="kolom-verifikasi text-center">
                                                 <input type="checkbox" class="form-check-input verif-check" 
                                                     data-tl-id="{{ $tl->tl_id }}"
                                                     {{ $tl->tl_publish_spi == 'Y' ? 'disabled checked' : '' }}>
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-sm btn-outline-success btn-kirim-tl"
+                                                <button type="button" class="btn btn-sm btn-outline-success btn-kirim-tl" id="btnKirimTL"
                                                     data-tl-id="{{ $tl->tl_id }}" title="Kirim"
                                                     {{ $tl->tl_publish_verif == 'Y' ? 'disabled' : '' }}
                                                     disabled>
@@ -290,12 +305,12 @@
                                                     data-tl-id="{{ $tl->tl_id }}" title="Tanggapan Auditor">
                                                     <i class="fas fa-reply"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-outline-warning"
+                                                <button type="button" class="btn btn-sm btn-outline-warning" id="btnEditTL"
                                                     data-bs-toggle="modal" data-bs-target="#editTindaklanjutModal"
                                                     data-tl-id="{{ $tl->tl_id }}" title="Edit (Auditee)">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-outline-danger"
+                                                <button type="button" class="btn btn-sm btn-outline-danger" id="btnHapusTL"
                                                     onclick="confirmDelete('{{ $tl->tl_id }}')">
                                                     <i class="fas fa-trash"></i>
                                                 </button>

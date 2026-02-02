@@ -70,12 +70,26 @@
         }
     </style>
 
-    @if (auth()->user()->user_level === 'operator' || auth()->user()->user_level === 'verifikator')
+    @if (auth()->check() && (auth()->user()->user_level === 'operator' || auth()->user()->user_level === 'verifikator'))
     <style>
         .kolom-status { display: none; }
-        .kolom-cb { display: none; }
+        .kolom-cbkirim { display: none; }
+        .kolom-cbpublish { display: none; }
+        #btnEditRekomendasi { display: none; }
+        #btnDeleteRekomendasi { display: none; }
         #btnKirimSelected { display: none; }
         #btnPublishSelected { display: none; }
+        #btnTambahRekomendasi { display: none; }
+    </style>
+    @elseif (auth()->check() && auth()->user()->user_level === 'spi')
+    <style>
+        .kolom-cbpublish { display: none; }
+        #btnPublishSelected { display: none; }
+    </style>
+    @elseif (auth()->check() && auth()->user()->user_level === 'kabagspi')
+    <style>
+        .kolom-cbkirim { display: none; }
+        #btnKirimSelected { display: none; }
         #btnTambahRekomendasi { display: none; }
     </style>
     @endif
@@ -210,10 +224,10 @@
                             <table id="rekomendasiTable" class="table table-striped table-hover">
                                 <thead>
                                     <tr>
-                                        <th class="kolom-cb" data-orderable="false" data-searchable="false">
+                                        <th class="kolom-cbkirim" data-orderable="false" data-searchable="false">
                                             <input type="checkbox" id="selectAllRekomendasi">
                                         </th>
-                                        <th class="kolom-cb" data-orderable="false" data-searchable="false">
+                                        <th class="kolom-cbpublish" data-orderable="false" data-searchable="false">
                                             <input type="checkbox" id="selectAllPublish">
                                         </th>
                                         <th>No</th>
@@ -227,11 +241,11 @@
                                 <tbody>
                                     @foreach ($rekomendasi as $index => $item)
                                         <tr>
-                                            <td class="kolom-cb">
+                                            <td class="kolom-cbkirim">
                                                 <input type="checkbox" class="rek-check" value="{{ $item->rekomendasi_id }}"
                                                     @if ($item->rekomendasi_kirim === 'Y') disabled @endif>
                                             </td>
-                                            <td class="kolom-cb">
+                                            <td class="kolom-cbpublish">
                                                 <input type="checkbox" class="publish-check" value="{{ $item->rekomendasi_id }}"
                                                     @if ($item->rekomendasi_publish_kabag === 'Y') disabled @endif>
                                             </td>
@@ -284,17 +298,17 @@
                                             </td>
                                             <td class="text-nowrap">
                                                 <div class="btn-group btn-group-sm" role="group" aria-label="Aksi">
-                                                    <button type="button" class="btn btn-outline-primary"
+                                                    <button type="button" class="btn btn-outline-primary" id="btnViewTindakLanjut"
                                                         onclick="lihatTindakLanjut({{ $item->rekomendasi_id }})"
                                                         title="Lihat Tindak Lanjut">
                                                         <i class="fas fa-clipboard-check"></i>
                                                     </button>
-                                                    <button type="button" class="btn btn-outline-warning"
+                                                    <button type="button" class="btn btn-outline-warning" id="btnEditRekomendasi"
                                                         onclick="editRekomendasi({{ $item->rekomendasi_id }})"
                                                         title="Edit Rekomendasi">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
-                                                    <button type="button" class="btn btn-outline-danger"
+                                                    <button type="button" class="btn btn-outline-danger" id="btnDeleteRekomendasi"
                                                         onclick="deleteRekomendasi({{ $item->rekomendasi_id }})"
                                                         title="Hapus Rekomendasi">
                                                         <i class="fas fa-trash"></i>

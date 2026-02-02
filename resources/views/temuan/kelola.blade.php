@@ -68,16 +68,35 @@
         .header-gradient-success {
             background: linear-gradient(135deg, #67b853 0%, #054d23 100%);
         }
-
-
-
     </style>
 
-    @if (auth()->user()->user_level === 'operator' || auth()->user()->user_level === 'verifikator')
-    <style>
-        .kolom-status { display: none; }
-    </style>
+    @if (auth()->check() && (auth()->user()->user_level === 'operator' || auth()->user()->user_level === 'verifikator'))
+        <style>
+            .kolom-status {
+                display: none;
+            }
+
+            #btnTambahTemuan {
+                display: none;
+            }
+
+            #btnEditTemuan {
+                display: none;
+            }
+
+            #btnHapusTemuan {
+                display: none;
+            }
+        </style>
+    @elseif (auth()->check() && auth()->user()->user_level === 'kabagspi')
+        <style>
+            #btnTambahTemuan {
+                display: none;
+            }
+        </style>
     @endif
+
+
 
     <div class="container-fluid">
         <div class="row">
@@ -117,11 +136,11 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="card-title">Daftar Temuan</h5>
                         <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-primary me-2" id="btnTambahTemuan" data-bs-toggle="modal"
                                 data-bs-target="#addTemuanModal">
                                 <i class="fas fa-plus"></i> Tambah Temuan
                             </button>
-                            <a href="{{ route('temuan.index') }}" class="btn btn-secondary">
+                            <a href="{{ route('temuan.index') }}" class="btn btn-secondary" id="btnKembali">
                                 <i class="fas fa-arrow-left"></i> Kembali
                             </a>
                         </div>
@@ -177,21 +196,25 @@
                                                                             <!-- Kolom aksi pada setiap baris temuan -->
                                                                             <div class="btn-group" role="group">
                                                                                 <button type="button" class="btn btn-sm btn-outline-info"
-                                                                                    onclick="detailTemuan({{ $item->temuan_id }})" title="Detail">
+                                                                                    id="btnDetailTemuan" onclick="detailTemuan({{ $item->temuan_id }})"
+                                                                                    title="Detail">
                                                                                     <i class="fas fa-eye"></i>
                                                                                 </button>
                                                                                 <button type="button" class="btn btn-sm btn-outline-warning"
-                                                                                    onclick="editTemuan({{ $item->temuan_id }})" title="Edit">
+                                                                                    id="btnEditTemuan" onclick="editTemuan({{ $item->temuan_id }})"
+                                                                                    title="Edit">
                                                                                     <i class="fas fa-edit"></i>
                                                                                 </button>
                                                                                 <button type="button" class="btn btn-sm btn-outline-primary"
+                                                                                    id="btnKelolaRekomendasi"
                                                                                     onclick="kelolaRekomendasi({{ $item->temuan_id }})"
                                                                                     title="Kelola Rekomendasi">
                                                                                     <i class="fas fa-tasks"></i>
                                                                                 </button>
                                                                                 <!-- Tombol Hapus Temuan -->
                                                                                 <button type="button" class="btn btn-sm btn-outline-danger"
-                                                                                    onclick="hapusTemuan({{ $item->temuan_id }})" title="Hapus">
+                                                                                    id="btnHapusTemuan" onclick="hapusTemuan({{ $item->temuan_id }})"
+                                                                                    title="Hapus">
                                                                                     <i class="fas fa-trash"></i>
                                                                                 </button>
                                                                             </div>
@@ -649,27 +672,27 @@
 
                 // Tulis ke ID yang benar di modal-body
                 $('#detailTemuanContent').html(`
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="mb-2 pb-2 border-bottom">
-                                                <strong>Judul Temuan:</strong><br>
-                                                <div>${data.temuan_judul || 'N/A'}</div>
-                                            </div>
-                                            <div class="mb-2 pb-2 border-bottom">
-                                                <strong>Nominal:</strong><br>
-                                                ${data.nominal ? 'Rp ' + new Intl.NumberFormat('id-ID').format(data.nominal) : 'N/A'}
-                                            </div>
-                                            <div class="mb-2 pb-2 border-bottom">
-                                                <strong>Penyebab:</strong><br>
-                                                <div>${data.penyebab || 'N/A'}</div>
-                                            </div>
-                                            <div class="mb-2 pb-2 border-bottom">
-                                                <strong>Kriteria:</strong><br>
-                                                <div>${data.temuan_kriteria || 'N/A'}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `);
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="mb-2 pb-2 border-bottom">
+                                                            <strong>Judul Temuan:</strong><br>
+                                                            <div>${data.temuan_judul || 'N/A'}</div>
+                                                        </div>
+                                                        <div class="mb-2 pb-2 border-bottom">
+                                                            <strong>Nominal:</strong><br>
+                                                            ${data.nominal ? 'Rp ' + new Intl.NumberFormat('id-ID').format(data.nominal) : 'N/A'}
+                                                        </div>
+                                                        <div class="mb-2 pb-2 border-bottom">
+                                                            <strong>Penyebab:</strong><br>
+                                                            <div>${data.penyebab || 'N/A'}</div>
+                                                        </div>
+                                                        <div class="mb-2 pb-2 border-bottom">
+                                                            <strong>Kriteria:</strong><br>
+                                                            <div>${data.temuan_kriteria || 'N/A'}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `);
 
                 // Tampilkan modal
                 const modalEl = document.getElementById('detailTemuanModal');
