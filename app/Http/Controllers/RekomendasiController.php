@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\Rekomendasi;
 use App\Models\Pemeriksaan;
 use App\Models\Temuan;
+use App\Models\Rekom;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -55,6 +56,7 @@ class RekomendasiController extends Controller
                 'rekomendasi_tgl' => 'required|date',
                 'rekomendasi_tgl_deadline' => 'nullable|date',
                 'rekomendasi_status' => 'nullable|string|max:100',
+                'rekomen_id' => 'required|exists:tb_master_rekomendasi,rekomen_id',
                 'unit_id' => 'nullable|exists:tb_unit,unit_id',
             ]);
 
@@ -185,6 +187,7 @@ class RekomendasiController extends Controller
                 'rekomendasi_tgl' => 'required|date',
                 'rekomendasi_tgl_deadline' => 'nullable|date',
                 'rekomendasi_status' => 'nullable|string|max:100',
+                'rekomen_id' => 'required|exists:tb_master_rekomendasi,rekomen_id',
                 'unit_id' => 'nullable|exists:tb_unit,unit_id',
             ]);
 
@@ -295,8 +298,9 @@ class RekomendasiController extends Controller
 
         $units = Unit::all();
         $users = User::all();
+        $masterRekomendasi = Rekom::orderBy('judul', 'asc')->get();
 
-        return view('rekomendasi.kelola', compact('pemeriksaan', 'rekomendasi', 'units', 'users'));
+        return view('rekomendasi.kelola', compact('pemeriksaan', 'rekomendasi', 'units', 'users', 'masterRekomendasi'));
     }
 
     /**
@@ -311,8 +315,9 @@ class RekomendasiController extends Controller
             ->orderBy('rekomendasi_tgl', 'desc')
             ->get();
         $units = Unit::all();
+        $masterRekomendasi = Rekom::orderBy('judul', 'asc')->get();
 
-        return view('rekomendasi.kelola', compact('temuan', 'pemeriksaan', 'rekomendasi', 'units'));
+        return view('rekomendasi.kelola', compact('temuan', 'pemeriksaan', 'rekomendasi', 'units', 'masterRekomendasi'));
     }
 
     public function kirimBatch(Request $request)

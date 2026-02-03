@@ -298,11 +298,6 @@
                                             </td>
                                             <td class="text-nowrap">
                                                 <div class="btn-group btn-group-sm" role="group" aria-label="Aksi">
-                                                    <button type="button" class="btn btn-outline-primary" id="btnViewTindakLanjut"
-                                                        onclick="lihatTindakLanjut({{ $item->rekomendasi_id }})"
-                                                        title="Lihat Tindak Lanjut">
-                                                        <i class="fas fa-clipboard-check"></i>
-                                                    </button>
                                                     <button type="button" class="btn btn-outline-warning" id="btnEditRekomendasi"
                                                         onclick="editRekomendasi({{ $item->rekomendasi_id }})"
                                                         title="Edit Rekomendasi">
@@ -312,6 +307,13 @@
                                                         onclick="deleteRekomendasi({{ $item->rekomendasi_id }})"
                                                         title="Hapus Rekomendasi">
                                                         <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="btn-group btn-group-sm" role="group" aria-label="Aksi">
+                                                    <button type="button" class="btn btn-outline-primary" id="btnViewTindakLanjut"
+                                                        onclick="lihatTindakLanjut({{ $item->rekomendasi_id }})"
+                                                        title="Lihat Tindak Lanjut">
+                                                        <i class="fas fa-clipboard-check"></i>
                                                     </button>
                                                 </div>
                                             </td>
@@ -349,6 +351,15 @@
                                     <input type="hidden" name="rekomendasi_judul" id="rekomendasi_judul" required>
                                 </div>
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rekomen_id" class="form-label">Klasifikasi Rekomendasi *</label>
+                            <select name="rekomen_id" id="rekomen_id" class="form-select" required>
+                                <option value="">-- Pilih Klasifikasi Rekomendasi --</option>
+                                @foreach ($masterRekomendasi as $rekom)
+                                    <option value="{{ $rekom->rekomen_id }}">{{ $rekom->judul}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
@@ -449,33 +460,17 @@
                             </div>
                         </div>
 
-                        <div class="row">
-                            @if (!isset($temuan))
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="edit_temuan_id" class="form-label">Terkait Temuan</label>
-                                        <select class="form-control" name="temuan_id" id="edit_temuan_id">
-                                            <option value="">Pilih Temuan (Opsional)</option>
-                                            @foreach ($pemeriksaan->temuan as $temuanItem)
-                                                <option value="{{ $temuanItem->temuan_id }}">
-                                                    {{ $temuanItem->temuan_judul }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="edit_unit_id" class="form-label">Unit</label>
-                                    <select class="form-control" name="unit_id" id="edit_unit_id">
-                                        <option value="">Pilih Unit</option>
-                                        @foreach ($units as $unit)
-                                            <option value="{{ $unit->unit_id }}">{{ $unit->unit_nama }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
+                        
+                        <div class="mb-3">
+                            <label for="edit_rekomen_id" class="form-label">Klasifikasi Rekomendasi *</label>
+                            <select name="rekomen_id" id="edit_rekomen_id" class="form-select" required>
+                                <option value="">-- Pilih Klasifikasi Rekomendasi --</option>
+                                @foreach ($masterRekomendasi as $rekom)
+                                    <option value="{{ $rekom->rekomen_id }}">{{ $rekom->judul }}</option>
+                                @endforeach
+                            </select>
                         </div>
+                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
@@ -674,6 +669,8 @@
                     // Unit fallback
                     const fallbackUnitId = {{ $pemeriksaan->unit_id }};
                     $('#edit_unit_id').val((data.unit_id ?? fallbackUnitId) || '');
+                    // Klasifikasi Rekomendasi
+                    $('#edit_rekomen_id').val(data.rekomen_id || '');
                     // Status
                     $('#edit_rekomendasi_status').val(data.rekomendasi_status || 'aktif');
                     // Form action

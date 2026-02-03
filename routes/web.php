@@ -76,6 +76,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tindak-lanjut/{id}/tanggapan', [TlController::class, 'tanggapan'])->name('tl.tanggapan');
     Route::post('/tindak-lanjut/{id}/publish-spi', [TlController::class, 'publishSPI'])->name('tl.publish-spi');
 
+    // Monitoring Routes
+    Route::get('/monitoring/tindak-lanjut', [\App\Http\Controllers\MonitoringController::class, 'tindakLanjut'])->name('monitoring.tindak-lanjut');
+
     // Master Data Routes
 // Manajemen User
     Route::get('/master/user', [UserController::class, 'index'])->name('user.index');
@@ -118,6 +121,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/master/temu/{id}/edit', [TemuController::class, 'edit'])->name('temu.edit');
     Route::put('/master/temu/{id}', [TemuController::class, 'update'])->name('temu.update');
     Route::delete('/master/temu/{id}', [TemuController::class, 'destroy'])->name('temu.destroy');
+
+    // Master Rekomendasi
+    Route::get('/master/rekom', [\App\Http\Controllers\RekomController::class, 'index'])->name('rekom.index');
+    Route::post('/master/rekom', [\App\Http\Controllers\RekomController::class, 'store'])->name('rekom.store');
+    Route::get('/master/rekom/{id}/edit', [\App\Http\Controllers\RekomController::class, 'edit'])->name('rekom.edit');
+    Route::put('/master/rekom/{id}', [\App\Http\Controllers\RekomController::class, 'update'])->name('rekom.update');
+    Route::delete('/master/rekom/{id}', [\App\Http\Controllers\RekomController::class, 'destroy'])->name('rekom.destroy');
 
     // Master AB
     Route::get('/master/ab', [KlasifikasiAbController::class, 'index'])->name('ab.index');

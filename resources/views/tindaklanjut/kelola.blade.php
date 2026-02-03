@@ -56,7 +56,7 @@
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item">
                                     <a href="{{ route('rekomendasi.kelola', $rekomendasi->pemeriksaan_id) }}">
-                                        Kelola Rekomendasi
+                                        Rekomendasi
                                     </a>
                                 </li>
                                 <li class="breadcrumb-item active">Tindak Lanjut</li>
@@ -294,16 +294,12 @@
                                                     {{ $tl->tl_publish_spi == 'Y' ? 'disabled checked' : '' }}>
                                             </td>
                                             <td>
+                                            <div class="btn-group btn-group-sm" role="group" aria-label="Aksi">    
                                                 <button type="button" class="btn btn-sm btn-outline-success btn-kirim-tl" id="btnKirimTL"
                                                     data-tl-id="{{ $tl->tl_id }}" title="Kirim"
                                                     {{ $tl->tl_publish_verif == 'Y' ? 'disabled' : '' }}
                                                     disabled>
                                                     <i class="fas fa-paper-plane"></i>
-                                                </button>
-                                                <button type="button" id="btnTanggapanTL" class="btn btn-sm btn-outline-primary"
-                                                    data-bs-toggle="modal" data-bs-target="#tanggapanTindaklanjutModal"
-                                                    data-tl-id="{{ $tl->tl_id }}" title="Tanggapan Auditor">
-                                                    <i class="fas fa-reply"></i>
                                                 </button>
                                                 <button type="button" class="btn btn-sm btn-outline-warning" id="btnEditTL"
                                                     data-bs-toggle="modal" data-bs-target="#editTindaklanjutModal"
@@ -314,7 +310,15 @@
                                                     onclick="confirmDelete('{{ $tl->tl_id }}')">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
-                                            </td>
+                                            </div> 
+                                            <div class="btn-group btn-group-sm" role="group" aria-label="Aksi">    
+                                                <button type="button" id="btnTanggapanTL" class="btn btn-sm btn-outline-primary"
+                                                    data-bs-toggle="modal" data-bs-target="#tanggapanTindaklanjutModal"
+                                                    data-tl-id="{{ $tl->tl_id }}" title="Tanggapan Auditor">
+                                                    <i class="fas fa-reply"></i>
+                                                </button>
+                                            </div>  
+                                        </td>
                                         </tr>
                                     @empty
                                         {{-- Biarkan kosong, DataTables akan menampilkan emptyTable bila diaktifkan --}}

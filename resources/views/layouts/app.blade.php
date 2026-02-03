@@ -520,6 +520,12 @@
                             <span>Master Temuan</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a href="{{ route('rekom.index') }}" class="nav-link">
+                            <i class="fas fa-search"></i>
+                            <span>Master Rekomendasi</span>
+                        </a>
+                    </li>
 
                     <li class="nav-item">
                         <a href="{{ route('ab.index') }}" class="nav-link">
@@ -530,11 +536,19 @@
 
                 </ul>
             </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
+            <li class="nav-item has-submenu">
+                <a href="#" class="nav-link" onclick="toggleSubmenu(event, this)">
                     <i class="fas fa-file-alt"></i>
                     <span>Laporan</span>
                 </a>
+                <ul class="submenu">
+                    <li class="nav-item">
+                        <a href="{{ route('monitoring.tindak-lanjut') }}" class="nav-link">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Monitoring Tindak Lanjut</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
             <li class="nav-item">
                 <a href="#" class="nav-link">
