@@ -290,11 +290,40 @@ class RekomendasiController extends Controller
      */
     public function kelola($pemeriksaan_id)
     {
-        $pemeriksaan = Pemeriksaan::with(['unit', 'lha'])->findOrFail($pemeriksaan_id);
-        $rekomendasi = Rekomendasi::with(['temuan', 'user', 'unit'])
-            ->where('pemeriksaan_id', $pemeriksaan_id)
-            ->orderBy('rekomendasi_id', 'asc')
-            ->get();
+        $user = auth()->user();
+
+        // Load pemeriksaan with rekomendasi for access check
+        $pemeriksaan = Pemeriksaan::with(['unit', 'lha', 'rekomendasi'])->findOrFail($pemeriksaan_id);
+
+        // Check access for operator/verifikator
+        if ($user && in_array($user->user_level, ['operator', 'verifikator'])) {
+            if ($user->unit_id) {
+                // Check if this pemeriksaan has any rekomendasi for user's unit
+                $hasAccess = $pemeriksaan->rekomendasi()
+                    ->where('unit_id', $user->unit_id)
+                    ->exists();
+
+                if (!$hasAccess) {
+                    \Log::warning('Access denied for user ' . $user->user_nik . ' to pemeriksaan ' . $pemeriksaan_id);
+                    return redirect()->route('rekomendasi.index')
+                        ->with('error', 'Anda tidak memiliki akses ke pemeriksaan ini.');
+                }
+
+                \Log::info('Access granted for operator/verifikator to pemeriksaan ' . $pemeriksaan_id);
+            }
+        }
+
+        // Build rekomendasi query with filter for operator/verifikator
+        $rekomendasiQuery = Rekomendasi::with(['temuan', 'user', 'unit'])
+            ->where('pemeriksaan_id', $pemeriksaan_id);
+
+        // Filter rekomendasi by unit_id for operator/verifikator
+        if ($user && in_array($user->user_level, ['operator', 'verifikator']) && $user->unit_id) {
+            $rekomendasiQuery->where('unit_id', $user->unit_id);
+            \Log::info('Filtering rekomendasi for unit_id: ' . $user->unit_id);
+        }
+
+        $rekomendasi = $rekomendasiQuery->orderBy('rekomendasi_id', 'asc')->get();
 
         $units = Unit::all();
         $users = User::all();
@@ -308,12 +337,41 @@ class RekomendasiController extends Controller
      */
     public function kelolaByTemuan(string $temuan_id)
     {
-        $temuan = Temuan::with(['pemeriksaan.unit'])->findOrFail($temuan_id);
+        $user = auth()->user();
+
+        $temuan = Temuan::with(['pemeriksaan.unit', 'pemeriksaan.rekomendasi'])->findOrFail($temuan_id);
         $pemeriksaan = $temuan->pemeriksaan;
-        $rekomendasi = Rekomendasi::with(['temuan', 'unit'])
-            ->where('temuan_id', $temuan_id)
-            ->orderBy('rekomendasi_tgl', 'desc')
-            ->get();
+
+        // Check access for operator/verifikator
+        if ($user && in_array($user->user_level, ['operator', 'verifikator'])) {
+            if ($user->unit_id) {
+                // Check if this pemeriksaan has any rekomendasi for user's unit
+                $hasAccess = $pemeriksaan->rekomendasi()
+                    ->where('unit_id', $user->unit_id)
+                    ->exists();
+
+                if (!$hasAccess) {
+                    \Log::warning('Access denied for user ' . $user->user_nik . ' to temuan ' . $temuan_id);
+                    return redirect()->route('rekomendasi.index')
+                        ->with('error', 'Anda tidak memiliki akses ke temuan ini.');
+                }
+
+                \Log::info('Access granted for operator/verifikator to temuan ' . $temuan_id);
+            }
+        }
+
+        // Build rekomendasi query with filter for operator/verifikator
+        $rekomendasiQuery = Rekomendasi::with(['temuan', 'unit'])
+            ->where('temuan_id', $temuan_id);
+
+        // Filter rekomendasi by unit_id for operator/verifikator
+        if ($user && in_array($user->user_level, ['operator', 'verifikator']) && $user->unit_id) {
+            $rekomendasiQuery->where('unit_id', $user->unit_id);
+            \Log::info('Filtering rekomendasi for unit_id: ' . $user->unit_id);
+        }
+
+        $rekomendasi = $rekomendasiQuery->orderBy('rekomendasi_tgl', 'desc')->get();
+
         $units = Unit::all();
         $masterRekomendasi = Rekom::orderBy('judul', 'asc')->get();
 

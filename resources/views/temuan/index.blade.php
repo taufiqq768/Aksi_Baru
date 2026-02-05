@@ -146,7 +146,7 @@ th {
    STATS CARD
 ================================ */
 .stats-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #0a4d68 0%, #088395 50%, #05bfdb 100%);
     border-radius: 16px;
     padding: 1.5rem;
     color: #fff;
@@ -206,19 +206,19 @@ th {
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="stats-card">
                 <div class="stats-number">{{ $pemeriksaan->where('lha')->count() }}</div>
                 <div class="stats-label">Dengan LHA</div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="stats-card">
                 <div class="stats-number">{{ $pemeriksaan->whereNull('lha')->count() }}</div>
                 <div class="stats-label">Tanpa LHA</div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <div class="stats-card">
                 <div class="stats-number">{{ $pemeriksaan->sum('temuan_count') }}</div>
                 <div class="stats-label">Total Temuan</div>
             </div>

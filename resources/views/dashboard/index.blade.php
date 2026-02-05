@@ -6,8 +6,23 @@
     <div class="container-fluid">
         <!-- Page Header -->
         <div class="page-header mb-4">
-            <h1 class="page-title">Dashboard</h1>
-            <p class="text-muted">Selamat datang di Aplikasi AKSI - Audit dan Kontrol Sistem Informasi</p>
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title mb-1">Dashboard</h1>
+                    <p class="text-muted mb-0">Selamat datang di Aplikasi AKSI - Audit dan Kontrol Sistem Informasi</p>
+                </div>
+                <div>
+                    <label for="filterTahun" class="form-label mb-1 small text-muted">Filter Tahun:</label>
+                    <select id="filterTahun" name="tahun" class="form-select" onchange="filterByYear()"
+                        style="min-width: 120px;">
+                        @foreach ($availableYears as $year)
+                            <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
+                                {{ $year }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
         </div>
 
         <!-- Cards Pemeriksaan -->
@@ -127,7 +142,7 @@
                             <i class="fas fa-chart-bar text-primary me-2"></i>
                             Perbandingan LHA, Temuan & Rekomendasi
                         </h5>
-                        <p class="text-muted small mb-0">Bulan berjalan vs Year to Date ({{ date('Y') }})</p>
+                        <p class="text-muted small mb-0">Bulan berjalan vs Year to Date ({{ $selectedYear }})</p>
                     </div>
                     <div class="card-body">
                         <canvas id="comparisonChart" height="280"></canvas>
@@ -372,5 +387,20 @@
                 }
             }
         });
+    </script>
+
+    <script>
+        function filterByYear() {
+            const tahun = document.getElementById('filterTahun').value;
+            const url = new URL(window.location.href);
+
+            if (tahun) {
+                url.searchParams.set('tahun', tahun);
+            } else {
+                url.searchParams.delete('tahun');
+            }
+
+            window.location.href = url.toString();
+        }
     </script>
 @endpush

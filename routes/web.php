@@ -14,6 +14,7 @@ use App\Http\Controllers\SebabController;
 use App\Http\Controllers\CosoController;
 use App\Http\Controllers\TemuController;
 use App\Http\Controllers\KlasifikasiAbController;
+use App\Http\Controllers\PkptController;
 use Illuminate\Auth\Events\Login;
 
 // Dashboard route
@@ -34,6 +35,13 @@ Route::middleware(['auth'])->group(function () {
 
     //Dashboard route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // PKPT routes
+    Route::get('/pkpt', [PkptController::class, 'index'])->name('pkpt.index');
+    Route::post('/pkpt', [PkptController::class, 'store'])->name('pkpt.store');
+    Route::get('/pkpt/{id}/edit', [PkptController::class, 'edit'])->name('pkpt.edit');
+    Route::put('/pkpt/{id}', [PkptController::class, 'update'])->name('pkpt.update');
+    Route::delete('/pkpt/{id}', [PkptController::class, 'destroy'])->name('pkpt.destroy');
 
     // Pemeriksaan routes
     Route::get('/pemeriksaan', [PemeriksaanController::class, 'index'])->name('pemeriksaan.index');
@@ -135,4 +143,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/master/ab/{id}/edit', [KlasifikasiAbController::class, 'edit'])->name('ab.edit');
     Route::put('/master/ab/{id}', [KlasifikasiAbController::class, 'update'])->name('ab.update');
     Route::delete('/master/ab/{id}', [KlasifikasiAbController::class, 'destroy'])->name('ab.destroy');
+    // Profile Password Update
+    Route::post('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password.update');
+    // Fallback for accidental GET request
+    Route::get('/profile/password', function () {
+        return back();
+    });
 });

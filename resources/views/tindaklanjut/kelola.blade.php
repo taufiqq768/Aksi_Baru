@@ -8,7 +8,7 @@
 @section('content')
     <style>
         .info-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(35deg, #0a4d68 0%, #088395 50%, #05bfdb 100%);
             border-radius: 10px;
             padding: 20px;
             color: white;
@@ -21,7 +21,7 @@
         }
 
         .header-gradient-magenta {
-            background: linear-gradient(135deg, #e43888 0%, #741616 100%);
+            background: linear-gradient(135deg, #38d0e4ff 0%, #5090daff 100%);
         }
     </style>
 

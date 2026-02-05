@@ -119,6 +119,14 @@ class Temuan extends Model
     }
 
     /**
+     * Relationship dengan model Rekomendasi
+     */
+    public function rekomendasi()
+    {
+        return $this->hasMany(Rekomendasi::class, 'temuan_id', 'temuan_id');
+    }
+
+    /**
      * Scope untuk filter berdasarkan pemeriksaan
      */
     public function scopeByPemeriksaan($query, $pemeriksaanId)

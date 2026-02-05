@@ -32,7 +32,7 @@
         }
 
         .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(35deg, #0a4d68 0%, #088395 50%, #05bfdb 100%);
             border-radius: 10px;
             padding: 20px;
             color: white;
@@ -81,10 +81,6 @@
                             <p>Total Unit</p>
                         </div>
                         <div class="col-md-2 stats-item">
-                            <h3>{{ array_sum(array_column($monitoringData, 'jumlah_temuan')) }}</h3>
-                            <p>Total Temuan</p>
-                        </div>
-                        <div class="col-md-2 stats-item">
                             <h3>{{ array_sum(array_column($monitoringData, 'jumlah_rekomendasi')) }}</h3>
                             <p>Total Rekomendasi</p>
                         </div>
@@ -115,7 +111,6 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Unit Kerja</th>
-                                        <th class="text-center">Jumlah Temuan</th>
                                         <th class="text-center">Jumlah Rekomendasi</th>
                                         <th class="text-center">Jumlah Tindak Lanjut</th>
                                         <th class="text-center">Belum Ditindaklanjuti</th>
@@ -145,13 +140,18 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td><strong>{{ $data['unit_nama'] }}</strong></td>
                                             <td class="text-center">
-                                                <span class="badge bg-primary">{{ $data['jumlah_temuan'] }}</span>
+                                                @if($data['jumlah_rekomendasi'] > 0)
+                                                    <span class="badge bg-info">{{ $data['jumlah_rekomendasi'] }}</span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
                                             </td>
                                             <td class="text-center">
-                                                <span class="badge bg-info">{{ $data['jumlah_rekomendasi'] }}</span>
-                                            </td>
-                                            <td class="text-center">
-                                                <span class="badge bg-secondary">{{ $data['jumlah_tindak_lanjut'] }}</span>
+                                                @if($data['jumlah_tindak_lanjut'] > 0)
+                                                    <span class="badge bg-secondary">{{ $data['jumlah_tindak_lanjut'] }}</span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
                                             </td>
                                             <td class="text-center">
                                                 @if($data['status_belum_ditindaklanjuti'] > 0)
@@ -191,10 +191,6 @@
                                 <tfoot>
                                     <tr class="table-secondary">
                                         <th colspan="2" class="text-end"><strong>TOTAL</strong></th>
-                                        <th class="text-center">
-                                            <span
-                                                class="badge bg-primary">{{ array_sum(array_column($monitoringData, 'jumlah_temuan')) }}</span>
-                                        </th>
                                         <th class="text-center">
                                             <span
                                                 class="badge bg-info">{{ array_sum(array_column($monitoringData, 'jumlah_rekomendasi')) }}</span>
@@ -302,7 +298,7 @@
                 "order": [[1, "asc"]],
                 "columnDefs": [{
                     "orderable": false,
-                    "targets": [8] // Progress column
+                    "targets": [7] // Progress column
                 }],
                 "footerCallback": function (row, data, start, end, display) {
                     // This ensures footer is always visible

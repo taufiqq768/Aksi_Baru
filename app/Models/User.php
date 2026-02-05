@@ -129,8 +129,8 @@ class User extends Authenticatable
             return;
         }
 
-        // New password or password being updated - hash it with bcrypt
-        $this->attributes['user_password'] = Hash::make($value);
+        // New password or password being updated - hash it with MD5
+        $this->attributes['user_password'] = md5($value);
     }
 
     /**

@@ -57,7 +57,7 @@
         }
 
         .info-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(35deg, #0a4d68 0%, #088395 50%, #05bfdb 100%);
             border-radius: 10px;
             padding: 20px;
             color: white;
@@ -675,27 +675,27 @@
 
                 // Tulis ke ID yang benar di modal-body
                 $('#detailTemuanContent').html(`
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <div class="mb-2 pb-2 border-bottom">
-                                                                <strong>Judul Temuan:</strong><br>
-                                                                <div>${data.temuan_judul || 'N/A'}</div>
-                                                            </div>
-                                                            <div class="mb-2 pb-2 border-bottom">
-                                                                <strong>Nominal:</strong><br>
-                                                                ${data.nominal ? 'Rp ' + new Intl.NumberFormat('id-ID').format(data.nominal) : 'N/A'}
-                                                            </div>
-                                                            <div class="mb-2 pb-2 border-bottom">
-                                                                <strong>Penyebab:</strong><br>
-                                                                <div>${data.penyebab || 'N/A'}</div>
-                                                            </div>
-                                                            <div class="mb-2 pb-2 border-bottom">
-                                                                <strong>Kriteria:</strong><br>
-                                                                <div>${data.temuan_kriteria || 'N/A'}</div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="mb-2 pb-2 border-bottom">
+                                                                    <strong>Judul Temuan:</strong><br>
+                                                                    <div>${data.temuan_judul || 'N/A'}</div>
+                                                                </div>
+                                                                <div class="mb-2 pb-2 border-bottom">
+                                                                    <strong>Nominal:</strong><br>
+                                                                    ${data.nominal ? 'Rp ' + new Intl.NumberFormat('id-ID').format(data.nominal) : 'N/A'}
+                                                                </div>
+                                                                <div class="mb-2 pb-2 border-bottom">
+                                                                    <strong>Penyebab:</strong><br>
+                                                                    <div>${data.penyebab || 'N/A'}</div>
+                                                                </div>
+                                                                <div class="mb-2 pb-2 border-bottom">
+                                                                    <strong>Kriteria:</strong><br>
+                                                                    <div>${data.temuan_kriteria || 'N/A'}</div>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                `);
+                                                    `);
 
                 // Tampilkan modal
                 const modalEl = document.getElementById('detailTemuanModal');

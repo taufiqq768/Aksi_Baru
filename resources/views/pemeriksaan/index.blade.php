@@ -87,7 +87,7 @@
 
         /* Stats Card Styling */
         .stats-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 50%, var(--primary-light) 100%);
             border-radius: 16px;
             padding: 1.5rem;
             color: white;
@@ -291,19 +291,19 @@
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                <div class="stats-number">{{ $pemeriksaan->where('pemeriksaan_aktif', 1)->count() }}</div>
+            <div class="stats-card">
+                <div class="stats-number">{{ $pemeriksaan->where('pemeriksaan_aktif', 'Y')->count() }}</div>
                 <div class="stats-label">Pemeriksaan Aktif</div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                <div class="stats-number">{{ $pemeriksaan->where('pemeriksaan_aktif', 0)->count() }}</div>
+            <div class="stats-card">
+                <div class="stats-number">{{ $pemeriksaan->where('pemeriksaan_aktif', 'N')->count() }}</div>
                 <div class="stats-label">Pemeriksaan Selesai</div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <div class="stats-card">
                 <div class="stats-number">
                     {{ $pemeriksaan->filter(function ($item) {
         return \Carbon\Carbon::parse($item->created_at)->month == now()->month; })->count() }}

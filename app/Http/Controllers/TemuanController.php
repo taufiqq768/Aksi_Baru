@@ -52,11 +52,14 @@ class TemuanController extends Controller
                 });
                 \Log::info('Filter: SPI/Auditor - by user_nik');
             }
-            // Jika user adalah operator atau verifikator, tampilkan data unit mereka saja
+            // Jika user adalah operator atau verifikator, tampilkan data berdasarkan unit_id di rekomendasi
             elseif (in_array($user->user_level, ['operator', 'verifikator'])) {
                 if ($user->unit_id) {
-                    $query->where('unit_id', $user->unit_id);
-                    \Log::info('Filter: Operator - by unit_id: ' . $user->unit_id);
+                    // Filter pemeriksaan yang memiliki rekomendasi dengan unit_id sesuai user
+                    $query->whereHas('rekomendasi', function ($q) use ($user) {
+                        $q->where('unit_id', $user->unit_id);
+                    });
+                    \Log::info('Filter: Operator/Verifikator - by rekomendasi.unit_id: ' . $user->unit_id);
                 } else {
                     // Jika tidak ada unit_id, tampilkan data yang dibuat oleh user tersebut
                     $query->where('user_nik', $user->user_nik);
@@ -127,7 +130,7 @@ class TemuanController extends Controller
             }
 
             // Remove empty values to avoid foreign key constraint issues
-            $data = array_filter($data, function($value) {
+            $data = array_filter($data, function ($value) {
                 return $value !== '' && $value !== null;
             });
 
@@ -248,7 +251,7 @@ class TemuanController extends Controller
             }
 
             // Remove empty values to avoid foreign key constraint issues
-            $data = array_filter($data, function($value, $key) {
+            $data = array_filter($data, function ($value, $key) {
                 // Keep these fields even if empty
                 $keepFields = ['temuan_kriteria', 'penyebab', 'temuan_obyek', 'nominal', 'temuan_pmr_sebelumnya'];
                 if (in_array($key, $keepFields)) {
@@ -300,8 +303,42 @@ class TemuanController extends Controller
      */
     public function kelola(string $pemeriksaan_id)
     {
-        $pemeriksaan = Pemeriksaan::with(['unit', 'temuan'])->findOrFail($pemeriksaan_id);
-        $temuan = $pemeriksaan->temuan->sortBy('temuan_id');
+        $user = auth()->user();
+
+        // Load pemeriksaan with rekomendasi relation for access check
+        $pemeriksaan = Pemeriksaan::with(['unit', 'temuan', 'rekomendasi'])->findOrFail($pemeriksaan_id);
+
+        // Check access for operator/verifikator
+        if ($user && in_array($user->user_level, ['operator', 'verifikator'])) {
+            if ($user->unit_id) {
+                // Check if this pemeriksaan has any rekomendasi for user's unit
+                $hasAccess = $pemeriksaan->rekomendasi()
+                    ->where('unit_id', $user->unit_id)
+                    ->exists();
+
+                if (!$hasAccess) {
+                    \Log::warning('Access denied for user ' . $user->user_nik . ' to pemeriksaan ' . $pemeriksaan_id);
+                    return redirect()->route('temuan.index')
+                        ->with('error', 'Anda tidak memiliki akses ke pemeriksaan ini.');
+                }
+
+                \Log::info('Access granted for operator/verifikator to pemeriksaan ' . $pemeriksaan_id);
+            }
+        }
+
+        // Filter temuan based on user role
+        if ($user && in_array($user->user_level, ['operator', 'verifikator']) && $user->unit_id) {
+            // Only show temuan that have rekomendasi for user's unit
+            $temuan = $pemeriksaan->temuan->filter(function ($item) use ($user) {
+                // Check if this temuan has any rekomendasi for user's unit
+                return $item->rekomendasi()->where('unit_id', $user->unit_id)->exists();
+            })->sortBy('temuan_id');
+
+            \Log::info('Filtering temuan with rekomendasi for unit_id: ' . $user->unit_id);
+        } else {
+            // Show all temuan for other roles
+            $temuan = $pemeriksaan->temuan->sortBy('temuan_id');
+        }
 
         // Load master data for dropdowns
         $bidangTemuan = BidangTemuan::all();

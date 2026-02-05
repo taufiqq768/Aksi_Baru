@@ -22,10 +22,6 @@ class MonitoringController extends Controller
         $monitoringData = [];
 
         foreach ($units as $unit) {
-            // Count temuan for this unit
-            $jumlahTemuan = Temuan::whereHas('pemeriksaan', function ($query) use ($unit) {
-                $query->where('unit_id', $unit->unit_id);
-            })->count();
 
             // Count rekomendasi for this unit
             $jumlahRekomendasi = Rekomendasi::where('unit_id', $unit->unit_id)->count();
@@ -51,7 +47,6 @@ class MonitoringController extends Controller
             $monitoringData[] = [
                 'unit_id' => $unit->unit_id,
                 'unit_nama' => $unit->unit_nama,
-                'jumlah_temuan' => $jumlahTemuan,
                 'jumlah_rekomendasi' => $jumlahRekomendasi,
                 'jumlah_tindak_lanjut' => $jumlahTindakLanjut,
                 'status_belum_ditindaklanjuti' => $statusBelumDitindaklanjuti,

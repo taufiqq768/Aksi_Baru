@@ -126,6 +126,13 @@ class Pemeriksaan extends Model
         return $this->belongsTo(\App\Models\Unit::class, 'unit_id');
     }
 
+    // public function unit()
+    // public function mention_unit()
+    // {
+    //     return $this->belongsTo(\App\Models\Unit::class, 'mention_unit');
+    // }
+
+
     /**
      * Petugas - Parse from pemeriksaan_petugas field (stored as slash separated values)
      */

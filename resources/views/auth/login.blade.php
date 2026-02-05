@@ -21,7 +21,8 @@
             <!-- Left Side - Logo & Description -->
             <div class="auth-left">
                 <div class="logo-section">
-                    <div class="logo">AKSI</div>
+                    <div class="logo"><img src="{{ asset('assets/images/aksi.png') }}" alt="Logo" class="logo-img">
+                    </div>
                     <p class="logo-description">
                         Sistem Audit dan Kontrol yang terintegrasi untuk meningkatkan efisiensi dan transparansi dalam
                         pengelolaan temuan audit, rekomendasi, dan tindak lanjut.
@@ -60,8 +61,8 @@
 
                     <div class="form-group">
                         <label for="user_password">Password</label>
-                        <input type="password" id="user_password" name="user_password"
-                            placeholder="Enter your password" required>
+                        <input type="password" id="user_password" name="user_password" placeholder="Enter your password"
+                            required>
                     </div>
 
                     <div class="checkbox-group">

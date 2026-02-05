@@ -105,6 +105,12 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        .logo-img {
+            max-height: 40px;
+            width: auto;
+            margin-left: 10px;
+        }
+
         .sidebar.collapsed .sidebar-header .logo-text {
             display: none;
         }
@@ -415,6 +421,10 @@
             display: none;
         }
 
+        .sidebar.collapsed .sidebar-header .logo {
+            display: none;
+        }
+
         /* Animation */
         .fade-in {
             animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -441,7 +451,39 @@
         [data-bs-theme="dark"] .glass-effect {
             background: rgba(0, 0, 0, 0.1);
         }
+
+        /* Profile Tabs Styling */
+        #profileTab .nav-link {
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        #profileTab .nav-link.active {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            background: transparent;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+        }
     </style>
+
+    @if (auth()->user()->user_level == 'operator' || auth()->user()->user_level == 'verifikator')
+        <style>
+            #nav-pkpt,
+            #nav-pemeriksaan,
+            #nav-master {
+                display: none;
+            }
+        </style>
+    @elseif (auth()->user()->user_level == 'spi' || auth()->user()->user_level == 'kabagspi')
+        <style>
+            #nav-pkpt,
+            #nav-master {
+                display: none;
+            }
+        </style>
+    @endif
 
     @stack('styles')
 </head>
@@ -451,8 +493,9 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <a href="/" class="logo">
-                <i class="fas fa-search-dollar"></i>
-                <span class="logo-text ms-2">AKSI</span>
+                <!-- <i class="fas fa-search-dollar"></i>
+                <span class="logo-text ms-2"></span> -->
+                <img src="{{ asset('assets/images/aksi.png') }}" alt="Logo" class="logo-img">
             </a>
         </div>
 
@@ -464,31 +507,32 @@
                     <span>Dashboard</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="nav-pkpt">
+                <a href="/pkpt" class="nav-link">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Manajemen PKPT</span>
+                </a>
+            </li>
+            <li class="nav-item" id="nav-pemeriksaan">
                 <a href="/pemeriksaan" class="nav-link">
                     <i class="fas fa-clipboard-list"></i>
                     <span>Data Pemeriksaan</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" id="nav-temuan">
                 <a href="/temuan" class="nav-link">
                     <i class="fas fa-clipboard-check"></i>
                     <span>Data Temuan</span>
                 </a>
             </li>
 
-            <li class="nav-item has-submenu">
+            <li class="nav-item has-submenu" id="nav-master">
                 <a href="#" class="nav-link" onclick="toggleSubmenu(event, this)">
                     <i class="fas fa-database"></i>
                     <span>Master Data</span>
                 </a>
                 <ul class="submenu">
-                    <li class="nav-item">
-                        <a href="{{ route('user.index') }}" class="nav-link">
-                            <i class="fas fa-users"></i>
-                            <span>Manajemen User</span>
-                        </a>
-                    </li>
+
                     <li class="nav-item">
                         <a href="{{ route('unit.index') }}" class="nav-link">
                             <i class="fas fa-building"></i>
@@ -556,11 +600,19 @@
                     <span>Statistik</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">
+            <li class="nav-item has-submenu" id="nav-pengaturan">
+                <a href="#" class="nav-link" onclick="toggleSubmenu(event, this)">
                     <i class="fas fa-cog"></i>
                     <span>Pengaturan</span>
                 </a>
+                <ul class="submenu">
+                    <li class="nav-item">
+                        <a href="{{ route('user.index') }}" class="nav-link">
+                            <i class="fas fa-users"></i>
+                            <span>Manajemen User</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
         </ul>
     </nav>
@@ -584,12 +636,16 @@
                 </button>
 
                 <div class="dropdown">
-                    <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user-circle fa-lg"></i>
-
+                    <button class="btn btn-link dropdown-toggle text-decoration-none d-flex align-items-center gap-2"
+                        type="button" data-bs-toggle="dropdown">
+                        <span class="d-none d-md-block" style="color: var(--bs-body-color); font-weight: 500;">
+                            {{ Auth::user()->user_nama ?? 'User' }}
+                        </span>
+                        <i class="fas fa-user-circle fa-lg" style="color: var(--bs-body-color);"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#profileModal"><i
+                                    class="fas fa-user me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -619,6 +675,120 @@
 
             <div class="fade-in">
                 @yield('content')
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="fas fa-user-circle me-2"></i>Profil Pengguna</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs mb-3" id="profileTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info"
+                                type="button" role="tab" aria-selected="true">Detail Profil</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password"
+                                type="button" role="tab" aria-selected="false">Ganti Password</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="profileTabContent">
+                        <!-- Info Tab -->
+                        <div class="tab-pane fade show active" id="info" role="tabpanel" aria-labelledby="info-tab">
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td width="35%" class="text-muted">Nama Lengkap</td>
+                                    <td class="fw-medium">{{ Auth::user()->user_nama ?? '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">NIK</td>
+                                    <td class="fw-medium">{{ Auth::user()->user_nik ?? '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Email</td>
+                                    <td class="fw-medium">{{ Auth::user()->user_email ?? '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">No. Telepon</td>
+                                    <td class="fw-medium">{{ Auth::user()->user_tlp ?? '-' }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Level Akses</td>
+                                    <td class="fw-medium">
+                                        <span class="badge bg-primary">{{ Auth::user()->user_level ?? '-' }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-muted">Unit Kerja</td>
+                                    <td class="fw-medium">{{ optional(Auth::user()->unit)->nama_unit ?? '-' }}</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Password Tab -->
+                        <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <form action="{{ route('profile.password.update') }}" method="POST">
+                                @csrf
+                                <div class="mb-3">
+                                    <label for="profile_current_password" class="form-label">Password Saat Ini</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="profile_current_password"
+                                            name="current_password" required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button"
+                                            data-target="profile_current_password">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="profile_new_password" class="form-label">Password Baru</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="profile_new_password"
+                                            name="new_password" required minlength="5">
+                                        <button class="btn btn-outline-secondary toggle-password" type="button"
+                                            data-target="profile_new_password">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text">Minimal 6 karakter.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="profile_new_password_confirmation" class="form-label">Konfirmasi
+                                        Password
+                                        Baru</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control"
+                                            id="profile_new_password_confirmation" name="new_password_confirmation"
+                                            required>
+                                        <button class="btn btn-outline-secondary toggle-password" type="button"
+                                            data-target="profile_new_password_confirmation">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">Simpan Password Baru</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -719,6 +889,28 @@
 
                 if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
                     sidebar.classList.remove('show');
+                }
+            }
+        });
+
+        // Toggle Password Visibility (Event Delegation)
+        document.addEventListener('click', function (e) {
+            const button = e.target.closest('.toggle-password');
+            if (button) {
+                const targetId = button.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const icon = button.querySelector('i');
+
+                if (input && icon) {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
                 }
             }
         });

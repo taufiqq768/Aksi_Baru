@@ -13,16 +13,42 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // 1. Card jumlah pemeriksaan berdasarkan jenis
-        $totalPemeriksaan = Pemeriksaan::count();
-        $pemeriksaanRutin = Pemeriksaan::where('pemeriksaan_jenis', 'Rutin')->count();
-        $pemeriksaanKhusus = Pemeriksaan::where('pemeriksaan_jenis', 'Khusus')->count();
-        $pemeriksaanTematik = Pemeriksaan::where('pemeriksaan_jenis', 'Tematik')->count();
+        // Get available years from pemeriksaan data
+        $availableYears = Pemeriksaan::selectRaw('DISTINCT YEAR(pemeriksaan_tgl_mulai) as year')
+            ->whereNotNull('pemeriksaan_tgl_mulai')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
 
-        // 2. Pie chart berdasarkan status TL
+        // If no years available, add current year
+        if ($availableYears->isEmpty()) {
+            $availableYears = collect([date('Y')]);
+        }
+
+        // Get year filter (default to latest available year)
+        $selectedYear = (string) $request->input('tahun');
+        if (empty($selectedYear)) {
+            $selectedYear = (string) $availableYears->first();
+        }
+
+        // 1. Card jumlah pemeriksaan berdasarkan jenis (filtered by year)
+        $totalPemeriksaan = Pemeriksaan::whereYear('pemeriksaan_tgl_mulai', $selectedYear)->count();
+        $pemeriksaanRutin = Pemeriksaan::where('pemeriksaan_jenis', 'Rutin')
+            ->whereYear('pemeriksaan_tgl_mulai', $selectedYear)
+            ->count();
+        $pemeriksaanKhusus = Pemeriksaan::where('pemeriksaan_jenis', 'Khusus')
+            ->whereYear('pemeriksaan_tgl_mulai', $selectedYear)
+            ->count();
+        $pemeriksaanTematik = Pemeriksaan::where('pemeriksaan_jenis', 'Tematik')
+            ->whereYear('pemeriksaan_tgl_mulai', $selectedYear)
+            ->count();
+
+        // 2. Pie chart berdasarkan status TL (filtered by year)
         $tlStatusData = Tl::select('tl_status', DB::raw('count(*) as total'))
+            ->whereHas('rekomendasi.pemeriksaan', function ($q) use ($selectedYear) {
+                $q->whereYear('pemeriksaan_tgl_mulai', $selectedYear);
+            })
             ->groupBy('tl_status')
             ->get();
 
@@ -32,9 +58,9 @@ class DashboardController extends Controller
 
         // 3. Chart perbandingan LHA, Temuan, Rekomendasi
         $currentMonth = Carbon::now()->month;
-        $currentYear = Carbon::now()->year;
+        $currentYear = $selectedYear;
 
-        // Bulan berjalan (current month)
+        // Bulan berjalan (current month in selected year)
         $lhaBulanIni = Lha::whereHas('pemeriksaan', function ($q) use ($currentMonth, $currentYear) {
             $q->whereMonth('pemeriksaan_tgl_mulai', $currentMonth)
                 ->whereYear('pemeriksaan_tgl_mulai', $currentYear);
@@ -54,7 +80,7 @@ class DashboardController extends Controller
         })
             ->count();
 
-        // Sampai dengan bulan berjalan (year to date)
+        // Sampai dengan bulan berjalan (year to date in selected year)
         $lhaYTD = Lha::whereHas('pemeriksaan', function ($q) use ($currentMonth, $currentYear) {
             $q->whereMonth('pemeriksaan_tgl_mulai', '<=', $currentMonth)
                 ->whereYear('pemeriksaan_tgl_mulai', $currentYear);
@@ -68,7 +94,7 @@ class DashboardController extends Controller
             ->count();
 
         $rekomendasiYTD = Rekomendasi::whereHas('pemeriksaan', function ($q) use ($currentMonth, $currentYear) {
-            $q->whereMonth('pemeriksaan_tgl_mulai', $currentMonth)
+            $q->whereMonth('pemeriksaan_tgl_mulai', '<=', $currentMonth)
                 ->whereYear('pemeriksaan_tgl_mulai', $currentYear);
         })
             ->count();
@@ -85,7 +111,9 @@ class DashboardController extends Controller
             'rekomendasiBulanIni',
             'lhaYTD',
             'temuanYTD',
-            'rekomendasiYTD'
+            'rekomendasiYTD',
+            'selectedYear',
+            'availableYears'
         ));
     }
 }
